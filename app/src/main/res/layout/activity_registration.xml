@@ -1,0 +1,103 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/material_grey_700"
+    tools:context="com.chatt.Login" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal"
+        android:orientation="vertical"
+        android:paddingBottom="@dimen/pad_20dp"
+        android:paddingLeft="@dimen/pad_15dp"
+        android:paddingRight="@dimen/pad_15dp"
+        android:paddingTop="@dimen/pad_20dp" >
+
+        <ImageView
+
+            android:layout_marginTop="60dp"
+            android:id="@+id/logo"
+            android:scaleType="center"
+            android:layout_centerInParent="true"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/icon"/>
+
+        <com.spentas.javad.securechat.font.RobotoTextView
+            android:id="@+id/welcome_text"
+            android:textStyle="bold"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/logo"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="-15dp"
+            android:textSize="20sp"
+            android:text="@string/register"
+            android:textColor="#00B763" />
+        <android.support.design.widget.TextInputLayout android:layout_height="wrap_content"
+            android:id="@+id/register_username_layout"
+            android:layout_width="wrap_content">
+        <EditText
+            android:layout_marginTop="30dp"
+            android:id="@+id/register_username_txt"
+            style="@style/editext_graybg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:drawableLeft="@drawable/ic_username"
+            android:hint="@string/username"
+            android:inputType="textEmailAddress" >
+            <requestFocus />
+        </EditText>
+
+
+        </android.support.design.widget.TextInputLayout>
+        <android.support.design.widget.TextInputLayout android:layout_height="wrap_content"
+            android:id="@+id/register_pass_layout"
+            android:layout_width="wrap_content">
+        <EditText
+            android:id="@+id/register_pass_txt"
+            style="@style/editext_graybg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="@dimen/pad_5dp"
+            android:inputType="textPassword"
+            android:drawableLeft="@drawable/ic_pwd"
+            android:hint="@string/password" >
+        </EditText>
+</android.support.design.widget.TextInputLayout>
+        <android.support.design.widget.TextInputLayout android:layout_height="wrap_content"
+            android:id="@+id/register_passconfirm_layout"
+            android:layout_width="wrap_content">
+        <EditText
+            android:id="@+id/register_confirmpass_txt"
+            style="@style/editext_graybg"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/pad_20dp"
+            android:layout_marginTop="@dimen/pad_5dp"
+            android:drawableLeft="@drawable/ic_pwd"
+            android:hint="Confirm password"
+            android:inputType="textPassword" >
+        </EditText>
+</android.support.design.widget.TextInputLayout>
+        <LinearLayout
+            android:id="@+id/main"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal" >
+
+            <Button
+                android:layout_marginTop="@dimen/pad_30dp"
+                android:id="@+id/btnReg"
+                style="@style/btn_white_large"
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/btn_height"
+                android:layout_weight="1"
+                android:text="@string/register" />
+        </LinearLayout>
+    </LinearLayout>
+
+</ScrollView>

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layer-list xmlns:android="http://schemas.android.com/apk/res/android">
+
+   <item>
+    <bitmap
+        android:alpha="0.2"
+android:gravity="center"
+        android:src="@drawable/splash_image1"/>
+    </item>
+</layer-list>

@@ -1,0 +1,78 @@
+<resources xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/material_green_500</item>
+        <item name="colorPrimaryDark">@color/material_green_700</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+    <!-- No Action Bar-->
+    <style name="AppTheme.NoActionBar" parent="Theme.AppCompat.Light.NoActionBar">
+    <item name="android:windowBackground">@color/black</item>
+        <!--<item name="android:windowBackground">@drawable/splash_background</item>-->
+    <item name="android:windowActionBar" >false</item>
+    </style>
+
+
+
+    <style name="hint_style" parent="TextAppearance.AppCompat">
+        <item name="android:textColorHint">@color/material_purple_100</item>
+    </style>
+
+    <!-- LOgin Page Style-->
+    <style name="editext_graybg" parent="android:Widget.EditText">
+        <item name="android:drawablePadding">@dimen/pad_10dp</item>
+        <item name="android:background">@drawable/rounded_rectangel</item>
+        <item name="android:ems">10</item>
+        <item name="android:inputType">textEmailAddress</item>
+        <item name="android:paddingLeft">@dimen/pad_10dp</item>
+        <item name="android:paddingRight">@dimen/pad_10dp</item>
+        <item name="android:textSize">@dimen/txt_16sp</item>
+    </style>
+    <style name="btn_white_large" parent="@style/btn">
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:background">@drawable/rounded_rectangel</item>
+        <item name="android:backgroundTint">@color/btn_background</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/txt_18sp</item>
+    </style>
+
+    <style name="btn" parent="android:Widget.Holo.Light.Button">
+        <item name="android:minHeight">1dp</item>
+        <item name="android:minWidth">1dp</item>
+    </style>
+
+    <style name="edittext_msg" parent="android:Widget.Holo.Light.EditText">
+        <item name="android:background">@drawable/edittext_bg</item>
+        <item name="android:ems">10</item>
+        <item name="android:imeActionId">100</item>
+        <item name="android:imeOptions">actionSend</item>
+        <item name="android:inputType">text</item>
+        <item name="android:layout_marginLeft">@dimen/pad_5dp</item>
+        <item name="android:layout_marginRight">@dimen/pad_5dp</item>
+        <item name="android:paddingLeft">@dimen/pad_5dp</item>
+        <item name="android:paddingRight">@dimen/pad_5dp</item>
+        <item name="android:textColorHint">@color/main_color_gray</item>
+        <item name="android:textSize">@dimen/txt_16sp</item>
+    </style>
+
+    <style name="editext_white" parent="android:Widget.Holo.Light.EditText">
+        <item name="android:background">@color/white</item>
+        <item name="android:inputType">textEmailAddress</item>
+        <item name="android:paddingBottom">@dimen/pad_10dp</item>
+        <item name="android:paddingTop">@dimen/pad_10dp</item>
+        <item name="android:textColor">@color/black</item>
+        <item name="android:textSize">@dimen/txt_14sp</item>
+    </style>
+    <style name="btn_green_white_bg" parent="@style/btn">
+        <item name="android:background">@color/white</item>
+        <item name="android:paddingBottom">@dimen/pad_10dp</item>
+        <item name="android:paddingRight">@dimen/pad_15dp</item>
+        <item name="android:paddingTop">@dimen/pad_10dp</item>
+        <item name="android:textColor">@color/main_color_green</item>
+        <item name="android:textSize">@dimen/txt_16sp</item>
+    </style>
+
+
+</resources>

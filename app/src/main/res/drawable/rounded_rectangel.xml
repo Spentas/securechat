@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<shape xmlns:android="http://schemas.android.com/apk/res/android" android:shape="rectangle" >
+<solid android:color="@color/textbox_background"/>
+    <corners android:radius="4dp"/>
+    <padding android:top="5dp"
+        android:bottom="5dp"/>
+    <size android:height="50dp" android:width="300dp"/>
+</shape>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal" android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+    <de.hdodenhof.circleimageview.CircleImageView
+        xmlns:app="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/frienlist_profile_image"
+        android:layout_margin="4dp"
+        android:paddingTop="4dp"
+        android:layout_width="66dp"
+        android:layout_height="66dp"
+        android:src="@drawable/ic_username"
+        app:civ_border_width="2dp"
+        app:civ_border_color="@color/material_blue_500"/>
+    <TextView
+        android:id="@+id/friendlist_username"
+        android:textColor="@color/black"
+        android:layout_marginLeft="13dp"
+        android:textSize="16sp"
+        android:layout_gravity="center_vertical"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="USER A"/>
+</LinearLayout>
