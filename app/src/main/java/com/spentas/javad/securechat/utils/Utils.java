@@ -47,6 +47,18 @@ public class Utils {
     }
 
     /**
+     * create custom dialog
+     * @param ctx the ctx
+     * @param layout the layout
+     */
+
+    public static void popupDialog(Context ctx,int layout){
+
+    }
+
+
+
+    /**
      * Show dialog.
      *
      * @param ctx       the ctx

@@ -8,7 +8,7 @@ package com.spentas.javad.securechat.network.websocket;
 //        Connection.class
 //        })
 public class ConnectionManager {
-    private static WsConnection wsConnection;
+    private static volatile WsConnection wsConnection = null;
 //public ConnectionManager(WsConnection connection){
 //    this.wsConnection =connection;
 //}
@@ -21,7 +21,12 @@ public class ConnectionManager {
     public static Connection getConnection(ConnectionType type) {
         switch (type) {
             case WEBSOCKET:
-                return wsConnection == null ? wsConnection = new WsConnection() : wsConnection;
+                if (wsConnection == null){
+                    synchronized (WsConnection.class){
+                        wsConnection = new WsConnection();
+                    }
+                }
+                return wsConnection;
         }
         return null;
     }

@@ -7,7 +7,7 @@ import org.json.JSONObject;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Locale;
-import com.spentas.javad.securechat.dao.SharedPreference;
+import com.spentas.javad.securechat.sqlite.SharedPreference;
 
 /**
  * Created by javad on 11/5/2015.

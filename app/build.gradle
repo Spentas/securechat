@@ -1,6 +1,14 @@
 apply plugin: 'com.android.application'
 
+
 android {
+
+    allprojects {
+        tasks.withType(JavaCompile) {
+            options.compilerArgs << "-Xlint:deprecation"
+        }
+    }
+
 
     packagingOptions {
         exclude 'META-INF/LICENSE'
@@ -33,7 +41,11 @@ android {
     }
 }
 
+
+
 dependencies {
+    compile 'com.android.support:recyclerview-v7:23.1.0'
+    compile 'com.android.support:cardview-v7:23.0.+'
     compile files('libs/butterknife-7.0.1.jar')
     compile files('libs/dragger-1.2.2.jar')
     compile files('libs/httpmime-4.5.1.jar')

@@ -1,4 +1,4 @@
-package com.spentas.javad.securechat.dao;
+package com.spentas.javad.securechat.sqlite;
 
 import android.content.Context;
 import android.content.SharedPreferences;

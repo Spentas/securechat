@@ -167,5 +167,8 @@
 
     <!-- For Update -->
     <string name="confirm_exit">Press Back button again to exit</string>
+    <string name="search_hint">Find Friends</string>
+    <string name="tab1">Friends</string>
+    <string name="tab2">Find Friends</string>
 
 </resources>
