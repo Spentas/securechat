@@ -1,6 +1,56 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/RelativeLayout1"
+    android:layout_width="match_parent"
+    android:background="@color/white"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:focusableInTouchMode="true">
+    <LinearLayout
+        android:id="@+id/search_bar"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentRight="true"
+        android:padding="@dimen/pad_10dp"
+     >
+<android.support.design.widget.TextInputLayout
+    android:paddingTop="4dp"
+    android:paddingBottom="@dimen/pad_10dp"
+    android:layout_weight="1"
+    android:clipToPadding="false"
+    android:layout_height="wrap_content"
+    android:layout_width="wrap_content">
+        <EditText
+            android:translationY="@dimen/pad_5dp"
+            android:inputType="textEmailAddress"
+            android:singleLine="true"
+            style="@style/editext_graybg"
+            android:id="@+id/search_txt"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:hint="@string/findyourfriends">
 
-</LinearLayout>
+        </EditText>
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.FloatingActionButton
+            android:translationY="@dimen/pad_5dp"
+            android:id="@+id/search_go"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical|end"
+            app:elevation="3dp"
+            app:backgroundTint="@color/material_green_500"
+            app:pressedTranslationZ="12dp"
+            android:src="@drawable/ic_account_search">
+        <requestFocus/>
+</android.support.design.widget.FloatingActionButton>
+    </LinearLayout>
+    <android.support.v7.widget.RecyclerView
+        android:id="@+id/search_result_list"
+        android:layout_below="@+id/search_bar"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" />
+</RelativeLayout>

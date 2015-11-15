@@ -44,7 +44,7 @@ public class SearchResultsActivity extends AppCompatActivity{
     }
     @OnClick(R.id.back_btn)
     public void back(){
-     finishActivity(3);
+        finish();
     }
 
     @Override

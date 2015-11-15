@@ -12,10 +12,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.loopj.android.http.RequestParams;
-import com.spentas.javad.securechat.network.websocket.NetworkConfig;
-import com.spentas.javad.securechat.network.websocket.webservice.RestfulRequest;
+import com.spentas.javad.securechat.network.NetworkConfig;
+import com.spentas.javad.securechat.network.webservice.RestfulRequest;
 import com.spentas.javad.securechat.utils.Callback;
 import com.spentas.javad.securechat.utils.Utils;
+
+import org.json.JSONObject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -51,7 +53,7 @@ public class RegistrationActivity extends AppCompatActivity implements Callback 
     }
 
     @Override
-    public void internalNotification() {
+    public void internalNotification(JSONObject object) {
         startActivity(new Intent(RegistrationActivity.this, MainActivity.class));
     }
 

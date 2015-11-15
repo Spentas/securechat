@@ -7,6 +7,8 @@ import org.json.JSONObject;
 import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Locale;
+
+import com.spentas.javad.securechat.network.NetworkConfig;
 import com.spentas.javad.securechat.sqlite.SharedPreference;
 
 /**
@@ -66,7 +68,7 @@ public class WsConnection implements Connection {
 
 
                 // clear the session id from shared preferences
-                utils.storeSessionId(null);
+                utils.storeWsSessionId(null);
             }
 
             @Override
@@ -111,9 +113,9 @@ public class WsConnection implements Connection {
                 String sessionId = jObj.getString("sessionId");
 
                 // Save the session id in shared preferences
-                utils.storeSessionId(sessionId);
+                utils.storeWsSessionId(sessionId);
 
-                Log.e(TAG, "Your session id: " + utils.getSessionId());
+                Log.e(TAG, "Your session id: " + utils.getWsSessionId());
 
             } else if (flag.equalsIgnoreCase(TAG_NEW)) {
                 // If the flag is 'new', new person joined the room
@@ -132,7 +134,7 @@ public class WsConnection implements Connection {
                 boolean isSelf = true;
 
                 // Checking if the message was sent by you
-                if (!sessionId.equals(utils.getSessionId())) {
+                if (!sessionId.equals(utils.getWsSessionId())) {
                     fromName = jObj.getString("name");
                     isSelf = false;
                 }

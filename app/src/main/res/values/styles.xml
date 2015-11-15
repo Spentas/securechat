@@ -1,4 +1,4 @@
-<resources xmlns:android="http://schemas.android.com/apk/res/android">
+<resources xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">
 
     <!-- Base application theme. -->
     <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
@@ -7,7 +7,7 @@
         <item name="windowNoTitle">true</item>
         <item name="colorPrimary">@color/material_green_500</item>
         <item name="colorPrimaryDark">@color/material_green_700</item>
-        <item name="colorAccent">@color/colorAccent</item>
+        <item name="colorAccent">@color/material_cyan_800</item>
     </style>
     <!-- No Action Bar-->
 
@@ -18,8 +18,28 @@
         <!--<item name="android:windowBackground">@drawable/splash_background</item>-->
     </style>
 
-
-
+    <style name="CircularProgressBarStyle">
+        <item name="android:layout_width">70sp</item>
+        <item name="android:layout_height">36sp</item>
+        <item name="android:layout_margin">8dp</item>
+        <item name="cpb_textIdle">@string/add</item>
+        <item name="cpb_textComplete">@string/done</item>
+        <item name="cpb_textError">@string/error</item>
+        <item name="android:textSize">14sp</item>
+        <item name="cpb_colorProgress">@android:color/transparent</item>
+        <item name="cpb_colorIndicator">@color/material_green_500</item>
+        <item name="cpb_colorIndicatorBackground">@color/main_color_500_20_percent</item>
+    </style>
+    <style name="CircularProgressBarStyle.2" parent="@style/CircularProgressBarStyle.Full">
+        <item name="cpb_selectorComplete">@drawable/cpb_idle_state_selector_full_complete</item>
+        <item name="cpb_selectorError">@drawable/cpb_idle_state_selector_full_error</item>
+    </style>
+    <style name="CircularProgressBarStyle.Full" parent="@style/CircularProgressBarStyle">
+        <item name="cpb_selectorIdle">@drawable/cpb_idle_state_selector_full</item>
+        <item name="cpb_selectorComplete">@drawable/cpb_idle_state_selector_full</item>
+        <item name="cpb_selectorError">@drawable/cpb_idle_state_selector_full</item>
+        <item name="android:textColor">@drawable/selector_text_full</item>
+    </style>
     <style name="hint_style" parent="TextAppearance.AppCompat">
         <item name="android:textColorHint">@color/material_purple_100</item>
     </style>
@@ -29,6 +49,7 @@
         <item name="android:drawablePadding">@dimen/pad_10dp</item>
         <item name="android:background">@drawable/rounded_rectangel</item>
         <item name="android:ems">10</item>
+        <item name="android:paddingBottom">@dimen/pad_5dp</item>
         <item name="android:inputType">textEmailAddress</item>
         <item name="android:paddingLeft">@dimen/pad_10dp</item>
         <item name="android:paddingRight">@dimen/pad_10dp</item>
@@ -41,6 +62,14 @@
         <item name="android:textColor">@color/white</item>
         <item name="android:textSize">@dimen/txt_18sp</item>
     </style>
+
+    <style name="rounded_btn" parent="android:Widget.EditText">
+        <item name="android:background">@drawable/rounded_rectangel</item>
+        <item name="android:ems">10</item>
+        <item name="android:textColor">@color/white</item>
+        <item name="android:textSize">@dimen/txt_12sp</item>
+    </style>
+
 
     <style name="btn" parent="android:Widget.Holo.Light.Button">
         <item name="android:minHeight">1dp</item>

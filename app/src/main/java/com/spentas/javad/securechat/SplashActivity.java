@@ -2,21 +2,20 @@ package com.spentas.javad.securechat;
 
 import android.animation.Animator;
 import android.animation.ObjectAnimator;
-import android.annotation.TargetApi;
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
-import android.media.Image;
-import android.os.Build;
-import android.os.Handler;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.animation.Animation;
 import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.spentas.javad.securechat.app.App;
+import com.spentas.javad.securechat.sqlite.SharedPreference;
 import com.spentas.javad.securechat.view.KenBurnsView;
 
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -24,25 +23,26 @@ import butterknife.ButterKnife;
 public class SplashActivity extends Activity {
 
     private final int SPLASH_DISPLAY_LENGTH = 9000;
+    @Inject
+    SharedPreference sharedPreference;
     @Bind(R.id.splash_img)
     KenBurnsView mSplashBackground;
     @Bind(R.id.logo)
     ImageView mLogo;
     @Bind(R.id.welcome_text)
     TextView welcomeText;
+    private boolean mLoginStaus = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
-       // mSplashBackground.setImageResource(R.drawable.splash_image);
+        ((App) getApplication()).getComponent().inject(this);
+        mLoginStaus = sharedPreference.getLoginStatus();
         animation();
 
-
     }
-
-
-
 
 
     private void animation() {
@@ -64,7 +64,7 @@ public class SplashActivity extends Activity {
                 new Handler().postDelayed(new Runnable() {
                     @Override
                     public void run() {
-                        startActivity(new Intent(SplashActivity.this, LoginActivity.class));
+                        startActivity(mLoginStaus ? new Intent(SplashActivity.this, MainActivity.class) : new Intent(SplashActivity.this, LoginActivity.class));
                         finish();
                     }
                 }, SPLASH_DISPLAY_LENGTH);

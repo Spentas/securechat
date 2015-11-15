@@ -9,7 +9,7 @@
       android:id="@+id/card_view"
       android:elevation="100dp"
       card_view:cardBackgroundColor="@android:color/white"
-      card_view:cardUseCompatPadding="false"
+      card_view:cardUseCompatPadding="true"
       card_view:cardCornerRadius="0dp"
       android:layout_height="wrap_content"
       android:layout_width="match_parent">
@@ -30,7 +30,6 @@
         app:civ_border_color="@color/material_blue_500"/>
     <TextView
         android:elevation="@dimen/pad_5dp"
-
         android:id="@+id/friendlist_username"
         android:textColor="@color/black"
         android:layout_marginLeft="13dp"

@@ -5,11 +5,15 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.design.widget.TextInputLayout;
+import android.graphics.Point;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 
-import com.spentas.javad.securechat.network.websocket.ConnectionManager;
+import com.spentas.javad.securechat.app.App;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -20,20 +24,18 @@ import java.util.regex.Pattern;
  */
 public class Utils {
 
-    private static Pattern pattern;
-    private static Matcher matcher;
     //Email Pattern
     private static final String EMAIL_PATTERN = "^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@((\\[[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\.[0-9]{1,3}\\])|(([a-zA-Z\\-0-9]+\\.)+[a-zA-Z]{2,}))$";
-
-
+    private static Pattern pattern;
+    private static Matcher matcher;
     /**
      * Show  progress bar.
      *
      * @param ctx       the ctx
-     *
-     *      */
+     */
     private static Context context;
     private static ProgressDialog progressDialog;
+
     public static ProgressDialog progressDialog(Context ctx) {
         if (context != ctx) {
             context = ctx;
@@ -42,20 +44,18 @@ public class Utils {
             progressDialog.setCancelable(false);
             return progressDialog;
         }
-         return progressDialog;
+        return progressDialog;
 
     }
 
-    /**
-     * create custom dialog
-     * @param ctx the ctx
-     * @param layout the layout
-     */
+    public static Point getDisplayDimension(Context ctx) {
+        Display display = ((WindowManager) ctx.getSystemService(ctx.getApplicationContext().WINDOW_SERVICE)).getDefaultDisplay();
+        Point size = new Point();
+        display.getSize(size);
 
-    public static void popupDialog(Context ctx,int layout){
 
+        return size;
     }
-
 
 
     /**
@@ -74,6 +74,7 @@ public class Utils {
                                          DialogInterface.OnClickListener listener2) {
 
         AlertDialog.Builder builder = new AlertDialog.Builder(ctx);
+
         // builder.setTitle(R.string.app_name);
         builder.setMessage(msg).setCancelable(false)
                 .setPositiveButton(btn1, listener1);
@@ -191,7 +192,6 @@ public class Utils {
         return showDialog(ctx, msg, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int id) {
-
                 dialog.dismiss();
             }
         });
@@ -275,6 +275,7 @@ public class Utils {
         return matcher.matches();
 
     }
+
     /**
      * Checks for Null String object
      *
@@ -284,6 +285,7 @@ public class Utils {
     public static boolean isPasswordValid(String txt) {
         return txt != null && txt.length() > 5 ? true : false;
     }
+
     /**
      * Checks for Null String object
      *
@@ -294,6 +296,33 @@ public class Utils {
         return txt != null && txt.trim().length() > 0 ? true : false;
     }
 
+    private static boolean isConnected= false;
 
+    /**
+     *
+     * @param connectionStatus
+     */
+    public static void setConnectionStatus(boolean connectionStatus){
+        isConnected = connectionStatus;
+    }
+
+    /**
+     *
+     * @return true if is connected to internet
+     */
+    public static boolean isConnected(){
+        ConnectivityManager connectivityManager = (ConnectivityManager) App.getContext().getSystemService(App.getContext().CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getNetworkInfo(connectivityManager.TYPE_MOBILE);
+        NetworkInfo networkInfoWifi = connectivityManager.getNetworkInfo(connectivityManager.TYPE_WIFI);
+        boolean isConnected = networkInfo != null
+                && networkInfo.isConnectedOrConnecting();
+
+        boolean isConnected_by_wifi = networkInfoWifi != null
+                && networkInfoWifi.isConnectedOrConnecting();
+        Utils.setConnectionStatus(isConnected);
+        Log.i((isConnected || isConnected_by_wifi) ? String.format("Connected by using 3G=%b || wifi=%b ", isConnected, isConnected_by_wifi) : "Disconnected");
+
+        return isConnected;
+    }
 
 }

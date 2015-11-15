@@ -156,8 +156,8 @@
     <string name="welcome">SecureChat</string>
     <string name="undo_deletion">UNDO DELETION</string>
     <string name="undo_deletion_travel">WOOHOO! &#160;&#160;\nI\'VE MADE IT!</string>
-    <string name="download">DOWNLOAD</string>
-    <string name="done">DONE</string>
+    <string name="add">ADD</string>
+    <string name="done">FRIEND</string>
     <string name="error">ERROR</string>
     <string name="login">LOGIN</string>
     <string name="register">REGISTER</string>
@@ -170,5 +170,6 @@
     <string name="search_hint">Find Friends</string>
     <string name="tab1">Friends</string>
     <string name="tab2">Find Friends</string>
+    <string name="findyourfriends">Find Your Friends</string>
 
 </resources>

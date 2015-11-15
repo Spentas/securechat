@@ -44,7 +44,7 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Vi
         return mUsers.size();
     }
 
-    public static class ViewHolder extends RecyclerView.ViewHolder {
+  protected static class ViewHolder extends RecyclerView.ViewHolder {
         @Bind(R.id.frienlist_profile_image)
         de.hdodenhof.circleimageview.CircleImageView profileImage;
         TextView username;
