@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.loopj.android.http.RequestParams;
 import com.spentas.javad.securechat.R;
 import com.spentas.javad.securechat.adapter.SearchListAdapter;
+import com.spentas.javad.securechat.app.App;
 import com.spentas.javad.securechat.model.User;
 import com.spentas.javad.securechat.network.webservice.RestfulRequest;
 import com.spentas.javad.securechat.utils.Callback;
@@ -76,11 +77,12 @@ public class FindFriendFragment extends Fragment implements Callback {
 
     @OnClick(R.id.search_go)
     public void findFriends(){
-        System.out.println("click");
-        params = new RequestParams();
-        params.put("username", mSearchBox.getText().toString());
-        params.put("token", "pass");
-        RestfulRequest.sendRequest(params, this , RestfulRequest.RequestType.FINDFRIEND);
+        ((App) getActivity().getApplication()).getConnection().sendMessageToServer(String.format("{\"message\":\"hi\",\"To\":\"%s\"}",mSearchBox.getText().toString()));
+//        System.out.println("click");
+//        params = new RequestParams();
+//        params.put("username", mSearchBox.getText().toString());
+//        params.put("token", "pass");
+//        RestfulRequest.sendRequest(params, this , RestfulRequest.RequestType.FINDFRIEND);
     }
 
     @Override

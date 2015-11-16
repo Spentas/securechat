@@ -26,7 +26,7 @@ public class App extends Application {
         mContext = this;
         component = DaggerAppComponent.builder().appModule(new AppModule(this)).build();
         onActivityLifecycleCallback();
-
+        component.inject(this);
     }
 
 

@@ -210,6 +210,7 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
 
         @Override
         public void onPageSelected(int position) {
+
             mMenu.findItem(R.id.action_search).setVisible((position == 1) ? false : false);
             final TabLayout tabLayout = mTabLayoutRef.get();
             if (tabLayout != null) {

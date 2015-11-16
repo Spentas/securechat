@@ -6,6 +6,7 @@ package com.spentas.javad.securechat.network.websocket;
 public interface Connection {
      boolean isConnected();
      String getReference();
+    public void sendMessageToServer(String message);
     boolean connect();
     boolean disConnect();
 

@@ -3,6 +3,14 @@ package com.spentas.javad.securechat.sqlite;
 import android.content.Context;
 import android.content.SharedPreferences;
 
+import com.spentas.javad.securechat.app.App;
+import com.spentas.javad.securechat.network.websocket.Connection;
+import com.spentas.javad.securechat.network.websocket.WsConnection;
+
+import java.util.HashMap;
+
+import javax.inject.Inject;
+
 /**
  * Created by javad on 11/6/2015.
  */
@@ -21,6 +29,17 @@ public class SharedPreference {
         sharedPref = this.context.getSharedPreferences(KEY_SHARED_PREF,
                 KEY_MODE_PRIVATE);
     }
+
+    private static SharedPreference sh;
+    public static SharedPreference getInstance() {
+                if (sh == null){
+                    synchronized (WsConnection.class){
+                        sh = new SharedPreference(App.getContext());
+                    }
+                }
+        return sh;
+    }
+
 
     public void storeLoginStatus(boolean status) {
         SharedPreferences.Editor editor = sharedPref.edit();
@@ -42,15 +61,18 @@ public class SharedPreference {
         return sharedPref.getString(KEY_SESSION_ID, null);
     }
 
-    public void storeLoginInfo(String username, String password) {
+    public void storeUserInfo(String username, String password) {
         SharedPreferences.Editor editor = sharedPref.edit();
         editor.putString(KEY_USERNAME, username);
         editor.putString(KEY_TOKEN, password);
         editor.commit();
     }
 
-    public String getToken() {
-        return sharedPref.getString(KEY_TOKEN, null);
+    public HashMap<String, String> getUserInfo() {
+        HashMap<String, String> map = new HashMap();
+        map.put(KEY_USERNAME, sharedPref.getString(KEY_USERNAME, "unknown"));
+        map.put(KEY_TOKEN, sharedPref.getString(KEY_USERNAME, null));
+        return map;
     }
 
 

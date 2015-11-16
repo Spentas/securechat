@@ -1,6 +1,7 @@
 package com.spentas.javad.securechat.network.websocket;
 
 
+import android.app.Application;
 import android.util.Log;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -8,8 +9,11 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Locale;
 
+import com.spentas.javad.securechat.app.App;
 import com.spentas.javad.securechat.network.NetworkConfig;
 import com.spentas.javad.securechat.sqlite.SharedPreference;
+
+import javax.inject.Inject;
 
 /**
  * Created by javad on 11/5/2015.
@@ -21,17 +25,23 @@ public class WsConnection implements Connection {
     private static final String TAG = "WSCONNECTION";
 
     private WebSocketClient client;
-    private SharedPreference utils;
+    // will be injected
+    @Inject
+    SharedPreference sharedPreference;
     // Client name
     private String name = null;
     // JSON flags to identify the kind of JSON response
     private static final String TAG_SELF = "self", TAG_NEW = "new",
             TAG_MESSAGE = "message", TAG_EXIT = "exit";
 
+
     public WsConnection() {
-        Log.i(TAG,URI.create(NetworkConfig.WS_URL + URLEncoder.encode("javad" )).toString());
+       // sharedPreference = SharedPreference.getInstance();
+        ((App) App.getContext()).getComponent().inject(this);
+        Log.i(TAG, URI.create(NetworkConfig.WS_URL + URLEncoder.encode("javad")).toString());
         client = new WebSocketClient(URI.create( NetworkConfig.WS_URL
-                + URLEncoder.encode("javad" )), new WebSocketClient.Listener() {
+                + URLEncoder.encode(sharedPreference.getUserInfo().get("username"))), new WebSocketClient.Listener() {
+
             @Override
             public void onConnect() {
 
@@ -68,7 +78,7 @@ public class WsConnection implements Connection {
 
 
                 // clear the session id from shared preferences
-                utils.storeWsSessionId(null);
+                sharedPreference.storeWsSessionId(null);
             }
 
             @Override
@@ -86,6 +96,7 @@ public class WsConnection implements Connection {
     /**
      * Method to send message to web socket server
      */
+    @Override
     public void sendMessageToServer(String message) {
         if (client != null && client.isConnected()) {
             client.send(message);
@@ -113,9 +124,9 @@ public class WsConnection implements Connection {
                 String sessionId = jObj.getString("sessionId");
 
                 // Save the session id in shared preferences
-                utils.storeWsSessionId(sessionId);
+                sharedPreference.storeWsSessionId(sessionId);
 
-                Log.e(TAG, "Your session id: " + utils.getWsSessionId());
+                Log.e(TAG, "Your session id: " + sharedPreference.getWsSessionId());
 
             } else if (flag.equalsIgnoreCase(TAG_NEW)) {
                 // If the flag is 'new', new person joined the room
@@ -134,7 +145,7 @@ public class WsConnection implements Connection {
                 boolean isSelf = true;
 
                 // Checking if the message was sent by you
-                if (!sessionId.equals(utils.getWsSessionId())) {
+                if (!sessionId.equals(sharedPreference.getWsSessionId())) {
                     fromName = jObj.getString("name");
                     isSelf = false;
                 }

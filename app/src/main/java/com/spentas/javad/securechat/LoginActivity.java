@@ -88,7 +88,7 @@ public class LoginActivity extends ActionBarActivity implements com.spentas.java
 
     @Override
     public void internalNotification(JSONObject object) {
-        sharedPreference.storeLoginInfo(username,password);
+        sharedPreference.storeUserInfo(username, password);
         sharedPreference.storeLoginStatus(true);
         startActivity(new Intent(LoginActivity.this, MainActivity.class));
     }
