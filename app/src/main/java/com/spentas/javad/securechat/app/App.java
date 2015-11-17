@@ -21,9 +21,8 @@ import javax.inject.Inject;
  * Created by javad on 10/29/2015.
  */
 public class App extends Application {
-   @Inject
-   static
-   SharedPreference sharedPreference;
+    @Inject
+    ConnectionManager connectionManager;
     private AppComponent component;
     private Connection connection;
     private static Context mContext;
@@ -34,7 +33,6 @@ public class App extends Application {
         component = DaggerAppComponent.builder().appModule(new AppModule(this)).build();
         onActivityLifecycleCallback();
         component.inject(this);
-        Log.i("App", String.valueOf(sharedPreference));
     }
 
 
@@ -43,7 +41,7 @@ public class App extends Application {
     }
 
     public Connection getConnection(){
-        return ConnectionManager.getConnection(ConnectionManager.ConnectionType.WEBSOCKET);
+        return connectionManager.getConnection(ConnectionManager.ConnectionType.WEBSOCKET);
     }
 
     public AppComponent getComponent(){

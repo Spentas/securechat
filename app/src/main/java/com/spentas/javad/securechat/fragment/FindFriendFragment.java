@@ -19,16 +19,21 @@ import com.spentas.javad.securechat.adapter.SearchListAdapter;
 import com.spentas.javad.securechat.app.App;
 import com.spentas.javad.securechat.model.User;
 import com.spentas.javad.securechat.network.webservice.RestfulRequest;
+import com.spentas.javad.securechat.sqlite.DbHelper;
 import com.spentas.javad.securechat.utils.Callback;
+import com.spentas.javad.securechat.utils.DataSetChangeEvent;
 import com.spentas.javad.securechat.utils.DividerItemDecoration;
-import com.spentas.javad.securechat.utils.Log;
 import com.spentas.javad.securechat.utils.Utils;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Produce;
 
 import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -38,9 +43,15 @@ import butterknife.OnClick;
  * Created by javad on 11/11/2015.
  */
 public class FindFriendFragment extends Fragment implements Callback {
-    public FindFriendFragment(){
-        //used by tablayout
-    }
+
+    @Inject
+    Bus bus;
+    @Inject
+    DbHelper mDb;
+    @Bind(R.id.search_txt)
+    EditText mSearchBox;
+    @Bind(R.id.search_result_list)
+    RecyclerView mRecyclerView;
     private SearchDialog mDialogFragment;
     private Bundle mBundle;
     private List<User> mSearchResult;
@@ -49,13 +60,16 @@ public class FindFriendFragment extends Fragment implements Callback {
     private SearchListAdapter mSearchListAdapter;
     private RequestParams params;
     private ObjectMapper mObjectMapper;
-    @Bind(R.id.search_txt)
-    EditText mSearchBox;
-    @Bind(R.id.search_result_list)
-    RecyclerView mRecyclerView;
+
+
+    public FindFriendFragment() {
+        //used by tablayout
+    }
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        ((App) App.getContext()).getComponent().inject(this);
         mObjectMapper = new ObjectMapper();
 
     }
@@ -63,27 +77,25 @@ public class FindFriendFragment extends Fragment implements Callback {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View v = inflater.inflate(R.layout.fragment_find_friend,container,false);
+        View v = inflater.inflate(R.layout.fragment_find_friend, container, false);
         mFragmentManager = getFragmentManager();
-        ButterKnife.bind(this,v);
+        ButterKnife.bind(this, v);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
         mRecyclerView.setLayoutManager(mLayoutManager);
         mSearchResult = new ArrayList<>();
-        mSearchListAdapter = new SearchListAdapter(getActivity(),mSearchResult);
+        mSearchListAdapter = new SearchListAdapter(getActivity(), mSearchResult);
         mRecyclerView.setAdapter(mSearchListAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
         return v;
     }
 
     @OnClick(R.id.search_go)
-    public void findFriends(){
-        ((App) getActivity().getApplication()).getConnection().sendMessageToServer(String.format("{\"message\":\"hi\",\"To\":\"%s\"}",mSearchBox.getText().toString()));
-//        System.out.println("click");
-//        params = new RequestParams();
-//        params.put("username", mSearchBox.getText().toString());
-//        params.put("token", "pass");
-//        RestfulRequest.sendRequest(params, this , RestfulRequest.RequestType.FINDFRIEND);
+    public void findFriends() {
+        params = new RequestParams();
+        params.put("username", mSearchBox.getText().toString());
+        params.put("token", "pass");
+        RestfulRequest.sendRequest(params, this, RestfulRequest.RequestType.FINDFRIEND);
     }
 
     @Override
@@ -91,16 +103,14 @@ public class FindFriendFragment extends Fragment implements Callback {
         String json = null;
         try {
             if (object.getString("tag").equalsIgnoreCase(RestfulRequest.RequestType.FINDFRIEND.toString()))
-                if (object.getBoolean("status")){
+                if (object.getBoolean("status")) {
                     json = object.getString("result");
-                    mSearchResult = new ArrayList<User>(Arrays.asList(mObjectMapper.readValue(json,User[].class)));
+                    mSearchResult = new ArrayList<User>(Arrays.asList(mObjectMapper.readValue(json, User[].class)));
                     mSearchListAdapter.clear();
                     mSearchListAdapter.addAll(mSearchResult);
                     mSearchListAdapter.notifyDataSetChanged();
-                }
-                else
+                } else
                     Utils.showDialog(this.getActivity(), "Friend not found.");
-
 
 
         } catch (Exception e) {
@@ -109,6 +119,9 @@ public class FindFriendFragment extends Fragment implements Callback {
             e.printStackTrace();
         }
     }
+
+
+
 
 
 }

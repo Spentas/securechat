@@ -12,13 +12,15 @@ import javax.inject.Inject;
 
 public class ConnectionManager {
     @Inject
-    volatile WsConnection wsConnection;
+   volatile WsConnection wsConnection;
 
 
     public ConnectionManager(){
         ((App) App.getContext()).getComponent().inject(this);
     }
+
     public Connection getConnection(ConnectionType type) {
+        System.out.println("connection manager " + wsConnection);
         switch (type) {
             case WEBSOCKET:
                 if (wsConnection == null){

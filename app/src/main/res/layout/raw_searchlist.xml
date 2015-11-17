@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content">
+
+    <android.support.v7.widget.CardView
+        xmlns:card_view="http://schemas.android.com/apk/res-auto"
+        android:id="@+id/card_view"
+        android:elevation="100dp"
+        card_view:cardBackgroundColor="@android:color/white"
+        card_view:cardUseCompatPadding="false"
+        card_view:cardCornerRadius="0dp"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent">
+        <RelativeLayout
+
+            android:orientation="horizontal"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <LinearLayout
+                android:gravity="center_vertical"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentRight="true"
+                >
+            <de.hdodenhof.circleimageview.CircleImageView
+                xmlns:app="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/frienlist_profile_image"
+                android:layout_margin="@dimen/pad_5dp"
+                android:paddingTop="4dp"
+                android:layout_width="66dp"
+                android:layout_height="66dp"
+                android:src="@drawable/ic_username"
+                app:civ_border_width="2dp"
+                app:civ_border_color="@color/material_blue_500"/>
+            <TextView
+
+                android:layout_weight="1"
+                android:layout_toRightOf="@id/frienlist_profile_image"
+                android:elevation="@dimen/pad_5dp"
+                android:id="@+id/friendlist_username"
+                android:textColor="@color/black"
+                android:layout_marginLeft="@dimen/pad_10dp"
+                android:textSize="14sp"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="USER A"/>
+            <com.spentas.javad.securechat.view.cpb.CircularProgressButton
+               android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:id="@+id/send_frireq_btn"
+                style="@style/CircularProgressBarStyle.2" />
+            </LinearLayout>
+            <!--<Button-->
+                <!--android:id="@+id/send_frireq_btn"-->
+                <!--style="@style/rounded_btn"-->
+                <!--android:gravity="center"-->
+                <!--android:layout_centerVertical="true"-->
+                <!--android:layout_alignParentRight="true"-->
+                <!--android:text="Send Friend Request"-->
+                <!--android:layout_marginRight="@dimen/pad_10dp"-->
+                <!--android:layout_width="73dp"-->
+                <!--android:layout_height="38dp"-->
+               <!--/>-->
+        </RelativeLayout>
+    </android.support.v7.widget.CardView>
+
+</LinearLayout>

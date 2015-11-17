@@ -45,13 +45,13 @@ public class WsConnection implements Connection {
 
         final URI uri = URI.create(NetworkConfig.WS_URL
                 + URLEncoder.encode(sharedPreference.getUserInfo().get("username")));
-        Log.i(TAG, String.format("%s init object ref %s", uri.toString() , this.getReference()));
+        Log.i(TAG, String.format("init object ref %s %s", uri.toString(), this));
         client = new WebSocketClient(URI.create( NetworkConfig.WS_URL
                 + URLEncoder.encode(sharedPreference.getUserInfo().get("username"))), new WebSocketClient.Listener() {
 
             @Override
             public void onConnect() {
-                Log.i(TAG, String.format("%s new connection was establishied. object ref %s", uri.toString()));
+                Log.i(TAG, String.format("%s new connection was established. object ref %s", uri.toString(),this));
 
             }
 
@@ -92,7 +92,7 @@ public class WsConnection implements Connection {
 
             @Override
             public void onError(Exception error) {
-                Log.e(TAG, "Error! : " + error);
+                Log.e(TAG, "Error!! :" + error);
 
             }
 

@@ -1,5 +1,6 @@
 package com.spentas.javad.securechat.fragment;
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -10,18 +11,25 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.spentas.javad.securechat.R;
 import com.spentas.javad.securechat.adapter.FriendListAdapter;
+import com.spentas.javad.securechat.app.App;
+import com.spentas.javad.securechat.model.User;
+import com.spentas.javad.securechat.sqlite.DbHelper;
 import com.spentas.javad.securechat.sqlite.SharedPreference;
+import com.spentas.javad.securechat.utils.DataSetChangeEvent;
 import com.spentas.javad.securechat.utils.DividerItemDecoration;
-import com.spentas.javad.securechat.utils.Log;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
+import butterknife.OnItemClick;
 
 import static com.spentas.javad.securechat.R.id;
 import static com.spentas.javad.securechat.R.layout;
@@ -32,56 +40,61 @@ import static com.spentas.javad.securechat.R.layout;
 public class FriendListFragment extends Fragment {
 
     @Inject
-    SharedPreference mSharedPreference;
+    Bus bus;
+    @Inject
+    DbHelper mDb;
+    @Bind(id.friendlist)
+    RecyclerView mRecyclerView;
+
+    private Object mLock = new Object();
     private static final String TAG = "RecyclerViewFragment";
-    private static final String KEY_LAYOUT_MANAGER = "layoutManager";
     private static final int SPAN_COUNT = 2;
     private static final int DATASET_COUNT = 60;
-    protected RecyclerView mRecyclerView;
-    protected FriendListAdapter mAdapter;
-    protected RecyclerView.LayoutManager mLayoutManager;
-    @Bind(id.friendlist)
-    RecyclerView friendList;
+    private FriendListAdapter mFriendListAdapter;
+    private RecyclerView.LayoutManager mLayoutManager;
+    private List<User> mFriends;
 
-    @Nullable
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+
         View view = inflater.inflate(layout.fragment_friendlist, container, false);
         ButterKnife.bind(this, view);
-
-//
-//        if (savedInstanceState != null) {
-//            // Restore saved layout manager type.
-//            mCurrentLayoutManagerType = (LayoutManagerType) savedInstanceState
-//                    .getSerializable(KEY_LAYOUT_MANAGER);
-//        }
-        friendList.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
-        friendList.setLayoutManager(new LinearLayoutManager(getActivity()));
-        friendList.setAdapter(new FriendListAdapter(getActivity(), dummyList()));
-        friendList.setItemAnimator(new DefaultItemAnimator());
+        ((App) App.getContext()).getComponent().inject(this);
+        mLayoutManager = new LinearLayoutManager(getActivity());
+        mFriends = mDb.fetchAllUsers();
+        mFriendListAdapter = new FriendListAdapter(getActivity(),mFriends);
+        mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
+        mRecyclerView.setLayoutManager(mLayoutManager);
+        mRecyclerView.setAdapter(mFriendListAdapter);
+        mRecyclerView.setItemAnimator(new DefaultItemAnimator());
 
         return view;
     }
 
-    //    @OnItemClick(R.id.friendlist) void onListItemClick(int positoin){
+//        @OnItemClick(R.id.friendlist) void onListItemClick(int positoin){
 //        startActivity(new Intent(this, ConversationFragment.class));
-//    }
-    public List<String> dummyList() {
-        List<String> list = new ArrayList<String>();
-        for (int i = 0; i < 3; i++) {
-            list.add("Javad");
-            list.add("Farzad");
-            list.add("Roham");
-            list.add("Ebi");
-            list.add("Poria");
-        }
-        return list;
+ //   }
+
+    @Subscribe public void onDataSetChangeEvent(DataSetChangeEvent event){
+        mFriends.clear();
+       synchronized (mLock) {
+           mFriends.addAll(mDb.fetchAllUsers());
+       }
+        mFriendListAdapter.notifyDataSetChanged();
     }
 
 
 
-    private enum LayoutManagerType {
-        GRID_LAYOUT_MANAGER,
-        LINEAR_LAYOUT_MANAGER
+    @Override
+    public void onPause() {
+        super.onPause();
+        bus.unregister(this);
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        bus.register(this);
     }
 }

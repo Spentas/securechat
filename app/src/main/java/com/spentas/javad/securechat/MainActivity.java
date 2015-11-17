@@ -122,8 +122,8 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
 
     @Override
     protected void onPause() {
-        Log.i(String.format("Connection status : %s",mConnection.isConnected()));
-        System.out.println();
+        mConnection.disConnect();
+        Log.i(String.format("Connection status : %b", mConnection.isConnected()));
         super.onPause();
 
     }
@@ -132,7 +132,7 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
     protected void onResume() {
 
         mConnection.connect();
-        Log.i(String.format("Connection status : %s", mConnection.isConnected()));
+        Log.i(String.format("Connection status : %b", mConnection.isConnected()));
         super.onResume();
     }
 

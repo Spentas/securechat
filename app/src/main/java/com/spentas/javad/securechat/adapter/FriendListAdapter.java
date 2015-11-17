@@ -8,9 +8,13 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.spentas.javad.securechat.R;
+import com.spentas.javad.securechat.model.User;
+import com.spentas.javad.securechat.sqlite.DbHelper;
 
 import java.util.List;
 import java.util.zip.Inflater;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 
@@ -18,10 +22,12 @@ import butterknife.Bind;
  * Created by javad on 11/11/2015.
  */
 public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.ViewHolder> {
-    private Context mContext;
-    private List<String> mUsers;
 
-    public FriendListAdapter(Context mContext, List<String> mUsers) {
+
+    private Context mContext;
+    private List<User> mUsers;
+
+    public FriendListAdapter(Context mContext, List<User> mUsers) {
         this.mContext = mContext;
         this.mUsers = mUsers;
     }
@@ -35,7 +41,7 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Vi
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        holder.username.setText(mUsers.get(position));
+        holder.username.setText(mUsers.get(position).getUsername());
 
     }
 
@@ -56,6 +62,8 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Vi
 
         }
     }
+
+
 }
 
 
