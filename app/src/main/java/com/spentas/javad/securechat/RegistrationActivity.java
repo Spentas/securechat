@@ -53,7 +53,7 @@ public class RegistrationActivity extends AppCompatActivity implements Callback 
     }
 
     @Override
-    public void internalNotification(JSONObject object) {
+    public void httpCallback(JSONObject object) {
         startActivity(new Intent(RegistrationActivity.this, MainActivity.class));
     }
 

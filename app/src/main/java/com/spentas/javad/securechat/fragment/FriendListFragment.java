@@ -2,7 +2,6 @@ package com.spentas.javad.securechat.fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
@@ -11,16 +10,17 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
+import com.spentas.javad.securechat.MainActivity;
 import com.spentas.javad.securechat.R;
 import com.spentas.javad.securechat.adapter.FriendListAdapter;
 import com.spentas.javad.securechat.app.App;
 import com.spentas.javad.securechat.model.User;
 import com.spentas.javad.securechat.sqlite.DbHelper;
-import com.spentas.javad.securechat.sqlite.SharedPreference;
-import com.spentas.javad.securechat.utils.DataSetChangeEvent;
+import com.spentas.javad.securechat.utils.event.DataSetChangeEvent;
 import com.spentas.javad.securechat.utils.DividerItemDecoration;
+import com.spentas.javad.securechat.utils.event.FragmentCallback;
 import com.squareup.otto.Bus;
+import com.squareup.otto.Produce;
 import com.squareup.otto.Subscribe;
 
 import java.util.List;
@@ -72,9 +72,11 @@ public class FriendListFragment extends Fragment {
         return view;
     }
 
-//        @OnItemClick(R.id.friendlist) void onListItemClick(int positoin){
-//        startActivity(new Intent(this, ConversationFragment.class));
- //   }
+
+
+    @Produce FragmentCallback fragmentCallback(){
+        return new FragmentCallback();
+    }
 
     @Subscribe public void onDataSetChangeEvent(DataSetChangeEvent event){
         mFriends.clear();
@@ -97,4 +99,6 @@ public class FriendListFragment extends Fragment {
         super.onResume();
         bus.register(this);
     }
+
+
 }

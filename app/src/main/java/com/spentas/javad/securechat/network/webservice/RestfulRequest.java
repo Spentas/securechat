@@ -56,7 +56,7 @@ public class RestfulRequest {
                     JSONObject jsonObject = new JSONObject(s);
                     if (jsonObject.getBoolean("status")) {
                         System.out.println("login");
-                        callback.internalNotification(jsonObject);
+                        callback.httpCallback(jsonObject);
                     } else {
                         System.out.println("failed to login1");
                         Utils.progressDialog(context).hide();
@@ -104,7 +104,7 @@ public class RestfulRequest {
                     JSONObject jsonObject = new JSONObject(s);
                     if (jsonObject.getBoolean("status")) {
                         System.out.println("register");
-                        callback.internalNotification(jsonObject);
+                        callback.httpCallback(jsonObject);
                     } else
                         System.out.println("failed to login");
 
@@ -155,7 +155,7 @@ public class RestfulRequest {
                 try {
                     JSONObject jsonObject = new JSONObject(s);
                         Log.e(REST_REQUEST, String.format("Get Response %s%s"," : ", s) );
-                        callback.internalNotification(jsonObject);
+                        callback.httpCallback(jsonObject);
 
                 } catch (JSONException e) {
                     e.printStackTrace();

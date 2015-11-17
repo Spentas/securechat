@@ -17,6 +17,7 @@ import android.view.ViewGroup.LayoutParams;
 import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spentas.javad.securechat.R;
@@ -55,7 +56,6 @@ public class SearchDialog extends DialogFragment implements AdapterView.OnItemCl
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-
         LayoutParams params = new LayoutParams(MATCH_PARENT, MATCH_PARENT);
         mRoot = new LinearLayout(context);
         mRoot.setOrientation(LinearLayout.VERTICAL);

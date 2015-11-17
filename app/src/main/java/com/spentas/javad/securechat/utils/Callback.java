@@ -9,12 +9,16 @@ import org.json.JSONObject;
  */
 
 public interface Callback {
-    public void internalNotification(JSONObject object);
-
+    public void httpCallback(JSONObject object);
     /**
      *
      * @return corresponding context
      */
     public Context getContext();
+
+
+    public enum CallbackType{
+        Fragment_Callback,HTTP_CALLBACK
+    }
 }
 

@@ -21,11 +21,9 @@ import com.spentas.javad.securechat.model.User;
 import com.spentas.javad.securechat.network.webservice.RestfulRequest;
 import com.spentas.javad.securechat.sqlite.DbHelper;
 import com.spentas.javad.securechat.utils.Callback;
-import com.spentas.javad.securechat.utils.DataSetChangeEvent;
 import com.spentas.javad.securechat.utils.DividerItemDecoration;
 import com.spentas.javad.securechat.utils.Utils;
 import com.squareup.otto.Bus;
-import com.squareup.otto.Produce;
 
 import org.json.JSONObject;
 
@@ -99,7 +97,7 @@ public class FindFriendFragment extends Fragment implements Callback {
     }
 
     @Override
-    public void internalNotification(JSONObject object) {
+    public void httpCallback(JSONObject object) {
         String json = null;
         try {
             if (object.getString("tag").equalsIgnoreCase(RestfulRequest.RequestType.FINDFRIEND.toString()))

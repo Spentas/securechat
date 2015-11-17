@@ -3,6 +3,7 @@ package com.spentas.javad.securechat.app;
 import com.spentas.javad.securechat.LoginActivity;
 import com.spentas.javad.securechat.MainActivity;
 import com.spentas.javad.securechat.SplashActivity;
+import com.spentas.javad.securechat.adapter.FriendListAdapter;
 import com.spentas.javad.securechat.adapter.SearchListAdapter;
 import com.spentas.javad.securechat.fragment.FindFriendFragment;
 import com.spentas.javad.securechat.fragment.FriendListFragment;
@@ -30,5 +31,6 @@ public interface AppComponent {
     void inject(ConnectionManager connectionManager);
     void inject(FriendListFragment friendListFragment);
     void inject (SearchListAdapter searchListAdapter);
+    void inject(FriendListAdapter friendListAdapter);
 
 }

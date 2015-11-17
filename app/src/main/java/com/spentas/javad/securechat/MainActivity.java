@@ -17,6 +17,7 @@ import android.view.MenuInflater;
 import com.loopj.android.http.RequestParams;
 import com.spentas.javad.securechat.adapter.ViewPagerAdapter;
 import com.spentas.javad.securechat.app.App;
+import com.spentas.javad.securechat.fragment.ConversationFragment;
 import com.spentas.javad.securechat.fragment.FindFriendFragment;
 import com.spentas.javad.securechat.fragment.FriendListFragment;
 import com.spentas.javad.securechat.fragment.SearchDialog;
@@ -27,6 +28,9 @@ import com.spentas.javad.securechat.network.websocket.ConnectionManager;
 import com.spentas.javad.securechat.utils.Callback;
 import com.spentas.javad.securechat.utils.Log;
 import com.spentas.javad.securechat.utils.Utils;
+import com.spentas.javad.securechat.utils.event.FragmentCallback;
+import com.squareup.otto.Bus;
+import com.squareup.otto.Subscribe;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,9 +47,11 @@ import butterknife.ButterKnife;
 /**
  * Created by javad on 10/29/2015.
  */
-public class MainActivity extends AppCompatActivity implements OnQueryTextListener, Callback {
+public class MainActivity extends AppCompatActivity implements OnQueryTextListener, Callback  {
 
     private static Menu mMenu;
+    @Inject
+    Bus mBus;
     @Inject
     ConnectionManager mConnectionManager;
     @Bind(R.id.tabs)
@@ -123,6 +129,7 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
     @Override
     protected void onPause() {
         mConnection.disConnect();
+        mBus.unregister(this);
         Log.i(String.format("Connection status : %b", mConnection.isConnected()));
         super.onPause();
 
@@ -130,7 +137,7 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
 
     @Override
     protected void onResume() {
-
+        mBus.register(this);
         mConnection.connect();
         Log.i(String.format("Connection status : %b", mConnection.isConnected()));
         super.onResume();
@@ -154,7 +161,7 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
     }
 
     @Override
-    public void internalNotification(JSONObject object) {
+    public void httpCallback(JSONObject object) {
         String json = null;
         try {
             if (object.getString("tag").equalsIgnoreCase(RestfulRequest.RequestType.FINDFRIEND.toString()))
@@ -177,6 +184,13 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
 
 
     }
+
+    @Subscribe
+    public void fragmentCallback(FragmentCallback fc){
+        startActivity(new Intent(MainActivity.this, ConversationFragment.class));
+
+    }
+
 
     @Override
     public Context getContext() {
@@ -222,4 +236,5 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
             }
         }
     }
+
 }

@@ -12,7 +12,7 @@ import com.spentas.javad.securechat.R;
 import com.spentas.javad.securechat.app.App;
 import com.spentas.javad.securechat.model.User;
 import com.spentas.javad.securechat.sqlite.DbHelper;
-import com.spentas.javad.securechat.utils.DataSetChangeEvent;
+import com.spentas.javad.securechat.utils.event.DataSetChangeEvent;
 import com.spentas.javad.securechat.view.cpb.CircularProgressButton;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Produce;
@@ -147,7 +147,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
         }
 
         @Produce
-        public DataSetChangeEvent dataSetChangeEvent(){
+        public DataSetChangeEvent produceDataSetChangeEvent(){
            return new DataSetChangeEvent();
         }
 
@@ -157,7 +157,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
             int position = getLayoutPosition();
             User user = mUsers.get(position);
             mDb.addUsers(user);
-            bus.post(new DataSetChangeEvent());
+            bus.post(produceDataSetChangeEvent());
         }
     }
 
