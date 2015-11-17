@@ -30,7 +30,7 @@ public class SharedPreference {
                 KEY_MODE_PRIVATE);
     }
 
-    private static SharedPreference sh;
+    private static volatile SharedPreference sh;
     public static SharedPreference getInstance() {
                 if (sh == null){
                     synchronized (WsConnection.class){

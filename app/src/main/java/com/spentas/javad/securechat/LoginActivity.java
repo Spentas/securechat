@@ -33,8 +33,6 @@ import butterknife.OnClick;
  */
 public class LoginActivity extends ActionBarActivity implements com.spentas.javad.securechat.utils.Callback {
 
-    private App app;
-
 
     @Inject
     SharedPreference sharedPreference;
@@ -54,11 +52,6 @@ public class LoginActivity extends ActionBarActivity implements com.spentas.java
         setContentView(R.layout.activity_login);
         ButterKnife.bind(this);
         ((App) getApplication()).getComponent().inject(this);
-        //ws connection
-        app = (App)getApplication();
-        Connection connection = app.getConnection();
-        System.out.println(connection.getReference());
-        System.out.println(connection.isConnected());
         mUsername.addTextChangedListener(new CustomTextWatcher(mUsername));
         mPassword.addTextChangedListener(new CustomTextWatcher(mPassword));
 
@@ -100,16 +93,14 @@ public class LoginActivity extends ActionBarActivity implements com.spentas.java
 
     @Override
     protected void onPause() {
-        app.getConnection().disConnect();
-        System.out.println(app.getConnection().isConnected());
+
         super.onPause();
 
     }
 
     @Override
     protected void onResume() {
-        app.getConnection().connect();
-        System.out.println(app.getConnection().isConnected());
+
         super.onResume();
     }
 

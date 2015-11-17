@@ -48,6 +48,7 @@
             android:layout_marginTop="10dp">
 
             <EditText
+
                 android:inputType="textEmailAddress"
                 android:id="@+id/login_username_txt"
                 style="@style/editext_graybg"

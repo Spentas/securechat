@@ -36,14 +36,22 @@ public class WsConnection implements Connection {
 
 
     public WsConnection() {
-       // sharedPreference = SharedPreference.getInstance();
         ((App) App.getContext()).getComponent().inject(this);
-        Log.i(TAG, URI.create(NetworkConfig.WS_URL + URLEncoder.encode("javad")).toString());
+        init();
+    }
+
+
+    public void init(){
+
+        final URI uri = URI.create(NetworkConfig.WS_URL
+                + URLEncoder.encode(sharedPreference.getUserInfo().get("username")));
+        Log.i(TAG, String.format("%s init object ref %s", uri.toString() , this.getReference()));
         client = new WebSocketClient(URI.create( NetworkConfig.WS_URL
                 + URLEncoder.encode(sharedPreference.getUserInfo().get("username"))), new WebSocketClient.Listener() {
 
             @Override
             public void onConnect() {
+                Log.i(TAG, String.format("%s new connection was establishied. object ref %s", uri.toString()));
 
             }
 
@@ -75,6 +83,7 @@ public class WsConnection implements Connection {
 
                 String message = String.format(Locale.US,
                         "Disconnected! Code: %d Reason: %s", code, reason);
+                Log.e(TAG, message);
 
 
                 // clear the session id from shared preferences
@@ -90,7 +99,6 @@ public class WsConnection implements Connection {
         }, null);
         client.connect();
         System.out.println("client " + client);
-
     }
 
     /**
@@ -99,6 +107,8 @@ public class WsConnection implements Connection {
     @Override
     public void sendMessageToServer(String message) {
         if (client != null && client.isConnected()) {
+            Log.e(TAG,String.format( "%s was sent to the server",message));
+
             client.send(message);
         }
     }

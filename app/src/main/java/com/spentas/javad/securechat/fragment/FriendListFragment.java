@@ -1,6 +1,5 @@
 package com.spentas.javad.securechat.fragment;
 
-import android.app.Activity;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -11,24 +10,29 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.spentas.javad.securechat.R;
 import com.spentas.javad.securechat.adapter.FriendListAdapter;
-import com.spentas.javad.securechat.app.App;
+import com.spentas.javad.securechat.sqlite.SharedPreference;
 import com.spentas.javad.securechat.utils.DividerItemDecoration;
+import com.spentas.javad.securechat.utils.Log;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
-import static com.spentas.javad.securechat.R.*;
+import static com.spentas.javad.securechat.R.id;
+import static com.spentas.javad.securechat.R.layout;
 
 /**
  * Created by javad on 11/11/2015.
  */
 public class FriendListFragment extends Fragment {
 
+    @Inject
+    SharedPreference mSharedPreference;
     private static final String TAG = "RecyclerViewFragment";
     private static final String KEY_LAYOUT_MANAGER = "layoutManager";
     private static final int SPAN_COUNT = 2;
@@ -36,17 +40,13 @@ public class FriendListFragment extends Fragment {
     protected RecyclerView mRecyclerView;
     protected FriendListAdapter mAdapter;
     protected RecyclerView.LayoutManager mLayoutManager;
-    private enum LayoutManagerType {
-        GRID_LAYOUT_MANAGER,
-        LINEAR_LAYOUT_MANAGER
-    }
     @Bind(id.friendlist)
     RecyclerView friendList;
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        View view =   inflater.inflate(layout.fragment_friendlist,container,false);
+        View view = inflater.inflate(layout.fragment_friendlist, container, false);
         ButterKnife.bind(this, view);
 
 //
@@ -59,9 +59,9 @@ public class FriendListFragment extends Fragment {
         friendList.setLayoutManager(new LinearLayoutManager(getActivity()));
         friendList.setAdapter(new FriendListAdapter(getActivity(), dummyList()));
         friendList.setItemAnimator(new DefaultItemAnimator());
+
         return view;
     }
-
 
     //    @OnItemClick(R.id.friendlist) void onListItemClick(int positoin){
 //        startActivity(new Intent(this, ConversationFragment.class));
@@ -78,4 +78,10 @@ public class FriendListFragment extends Fragment {
         return list;
     }
 
+
+
+    private enum LayoutManagerType {
+        GRID_LAYOUT_MANAGER,
+        LINEAR_LAYOUT_MANAGER
+    }
 }

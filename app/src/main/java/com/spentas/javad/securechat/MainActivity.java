@@ -11,9 +11,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.SearchView;
 import android.support.v7.widget.SearchView.OnQueryTextListener;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
+
 import com.loopj.android.http.RequestParams;
 import com.spentas.javad.securechat.adapter.ViewPagerAdapter;
 import com.spentas.javad.securechat.app.App;
@@ -22,7 +22,10 @@ import com.spentas.javad.securechat.fragment.FriendListFragment;
 import com.spentas.javad.securechat.fragment.SearchDialog;
 import com.spentas.javad.securechat.model.User;
 import com.spentas.javad.securechat.network.webservice.RestfulRequest;
+import com.spentas.javad.securechat.network.websocket.Connection;
+import com.spentas.javad.securechat.network.websocket.ConnectionManager;
 import com.spentas.javad.securechat.utils.Callback;
+import com.spentas.javad.securechat.utils.Log;
 import com.spentas.javad.securechat.utils.Utils;
 
 import org.json.JSONArray;
@@ -32,6 +35,8 @@ import org.json.JSONObject;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import javax.inject.Inject;
+
 import butterknife.Bind;
 import butterknife.ButterKnife;
 
@@ -40,16 +45,16 @@ import butterknife.ButterKnife;
  */
 public class MainActivity extends AppCompatActivity implements OnQueryTextListener, Callback {
 
-//    @Inject
-//    WsConnection connection;
     private static Menu mMenu;
-    App app;
+    @Inject
+    ConnectionManager mConnectionManager;
     @Bind(R.id.tabs)
     TabLayout tabLayout;
     @Bind(R.id.toolbar)
     Toolbar toolbar;
     @Bind(R.id.viewpager)
     ViewPager viewPager;
+    private Connection mConnection;
     private SearchDialog dialogFragment;
     private Bundle bundle;
     private List<User> searchResult;
@@ -62,7 +67,6 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         ((App) getApplication()).getComponent().inject(this);
-        app = (App) getApplication();
         setContentView(R.layout.activity_main);
         ButterKnife.bind(this);
         setSupportActionBar(toolbar);
@@ -76,6 +80,8 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
 
         viewPager.addOnPageChangeListener(new TabLayoutOnPageChangeListener(tabLayout));
         mFragmentManager = getSupportFragmentManager();
+        mConnection = mConnectionManager.getConnection(ConnectionManager.ConnectionType.WEBSOCKET);
+
     }
 
     @Override
@@ -116,8 +122,8 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
 
     @Override
     protected void onPause() {
-        app.getConnection().disConnect();
-        System.out.println(app.getConnection().isConnected());
+        Log.i(String.format("Connection status : %s",mConnection.isConnected()));
+        System.out.println();
         super.onPause();
 
     }
@@ -125,8 +131,8 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
     @Override
     protected void onResume() {
 
-        app.getConnection().connect();
-        System.out.println(app.getConnection().isConnected());
+        mConnection.connect();
+        Log.i(String.format("Connection status : %s", mConnection.isConnected()));
         super.onResume();
     }
 
@@ -152,21 +158,19 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
         String json = null;
         try {
             if (object.getString("tag").equalsIgnoreCase(RestfulRequest.RequestType.FINDFRIEND.toString()))
-               if (object.getBoolean("status")){
-                json = object.getString("result");
-                dialogFragment = SearchDialog.newInstance();
-                bundle = new Bundle();
-                bundle.putString("result", json);
-                dialogFragment.setArguments(bundle);
-                dialogFragment.show(mFragmentManager, SearchDialog.DIALOG_TAG);
-            }
-            else
-                Utils.showDialog(this, "Friend not found.");
-
+                if (object.getBoolean("status")) {
+                    json = object.getString("result");
+                    dialogFragment = SearchDialog.newInstance();
+                    bundle = new Bundle();
+                    bundle.putString("result", json);
+                    dialogFragment.setArguments(bundle);
+                    dialogFragment.show(mFragmentManager, SearchDialog.DIALOG_TAG);
+                } else
+                    Utils.showDialog(this, "Friend not found.");
 
 
         } catch (JSONException e) {
-                Utils.showDialog(this, "Unexcepted Error! Try again.");
+            Utils.showDialog(this, "Unexcepted Error! Try again.");
 
             e.printStackTrace();
         }

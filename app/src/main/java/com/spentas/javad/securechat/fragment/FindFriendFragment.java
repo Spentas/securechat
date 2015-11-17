@@ -21,6 +21,7 @@ import com.spentas.javad.securechat.model.User;
 import com.spentas.javad.securechat.network.webservice.RestfulRequest;
 import com.spentas.javad.securechat.utils.Callback;
 import com.spentas.javad.securechat.utils.DividerItemDecoration;
+import com.spentas.javad.securechat.utils.Log;
 import com.spentas.javad.securechat.utils.Utils;
 
 import org.json.JSONObject;
@@ -108,4 +109,6 @@ public class FindFriendFragment extends Fragment implements Callback {
             e.printStackTrace();
         }
     }
+
+
 }

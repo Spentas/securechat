@@ -5,18 +5,25 @@ import android.app.Application;
 import android.content.Context;
 import android.content.pm.ActivityInfo;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.spentas.javad.securechat.network.websocket.Connection;
 import com.spentas.javad.securechat.network.websocket.ConnectionManager;
+import com.spentas.javad.securechat.sqlite.SharedPreference;
 
 import java.util.Arrays;
 import java.util.List;
+
+import javax.inject.Inject;
 
 
 /**
  * Created by javad on 10/29/2015.
  */
 public class App extends Application {
+   @Inject
+   static
+   SharedPreference sharedPreference;
     private AppComponent component;
     private Connection connection;
     private static Context mContext;
@@ -27,12 +34,14 @@ public class App extends Application {
         component = DaggerAppComponent.builder().appModule(new AppModule(this)).build();
         onActivityLifecycleCallback();
         component.inject(this);
+        Log.i("App", String.valueOf(sharedPreference));
     }
 
 
     public static Context getContext(){
         return mContext;
     }
+
     public Connection getConnection(){
         return ConnectionManager.getConnection(ConnectionManager.ConnectionType.WEBSOCKET);
     }
