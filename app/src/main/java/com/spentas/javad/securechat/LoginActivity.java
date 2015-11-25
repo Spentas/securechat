@@ -13,9 +13,11 @@ import android.widget.Toast;
 
 import com.loopj.android.http.RequestParams;
 import com.spentas.javad.securechat.app.App;
+import com.spentas.javad.securechat.model.User;
 import com.spentas.javad.securechat.network.websocket.Connection;
 import com.spentas.javad.securechat.network.NetworkConfig;
 import com.spentas.javad.securechat.network.webservice.RestfulRequest;
+import com.spentas.javad.securechat.sqlite.DbHelper;
 import com.spentas.javad.securechat.sqlite.SharedPreference;
 import com.spentas.javad.securechat.utils.Utils;
 
@@ -33,7 +35,8 @@ import butterknife.OnClick;
  */
 public class LoginActivity extends ActionBarActivity implements com.spentas.javad.securechat.utils.Callback {
 
-
+    @Inject
+    DbHelper mDbHelper;
     @Inject
     SharedPreference sharedPreference;
     @Bind(R.id.login_username_txt)
@@ -46,6 +49,7 @@ public class LoginActivity extends ActionBarActivity implements com.spentas.java
     TextInputLayout mUsernameLayout;
     private String username;
     private String password;
+    private User user;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,14 +78,12 @@ public class LoginActivity extends ActionBarActivity implements com.spentas.java
     @OnClick(R.id.btnReg)
     public void registerOnClick(View view) {
         startActivity(new Intent(LoginActivity.this, RegistrationActivity.class));
-
     }
 
 
 
     @Override
     public void httpCallback(JSONObject object) {
-        sharedPreference.storeUserInfo(username, password);
         sharedPreference.storeLoginStatus(true);
         startActivity(new Intent(LoginActivity.this, MainActivity.class));
     }

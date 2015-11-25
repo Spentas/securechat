@@ -45,12 +45,6 @@ public class SplashActivity extends Activity {
         ButterKnife.bind(this);
         ((App) getApplication()).getComponent().inject(this);
 
-        System.out.println(new User().hashCode());
-        System.out.println(new User().hashCode());
-        System.out.println(new User().hashCode());
-        System.out.println(new User().getClass().toString());
-        System.out.println(new User().getClass().toString());
-        System.out.println(new User().getClass().toString());
 
 
         mLoginStaus = sharedPreference.getLoginStatus();

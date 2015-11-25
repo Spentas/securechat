@@ -4,12 +4,21 @@
     android:versionCode="1"
     android:versionName="1.0">
 
+    <supports-screens
+        android:anyDensity="true"
+        android:largeScreens="true"
+        android:normalScreens="true"
+        android:smallScreens="true"
+        android:xlargeScreens="true" />
+
     <uses-sdk
         android:minSdkVersion="14"
         android:targetSdkVersion="23" />
 
+
     <uses-permission android:name="android.permission.INTERNET" />
-    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE"/>
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
     <application
         android:name="com.spentas.javad.securechat.app.App"
         android:allowBackup="false"
@@ -32,7 +41,7 @@
         <activity
             android:name=".LoginActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:windowSoftInputMode="stateHidden" >
+            android:windowSoftInputMode="stateHidden">
 
         </activity>
         <activity
@@ -64,17 +73,28 @@
         <activity
             android:name=".RegistrationActivity"
             android:theme="@style/Theme.AppCompat.Light.NoActionBar"
-            android:windowSoftInputMode="stateHidden"></activity>
+            android:windowSoftInputMode="stateHidden">
+
+
+        </activity>
         <activity
             android:name=".fragment.ConversationFragment"
             android:theme="@style/AppTheme"
             android:windowSoftInputMode="stateHidden"></activity>
 
-<receiver android:name=".receiver.ConnectionReceiver">
-    <intent-filter>
-        <action android:name="android.net.conn.CONNECTIVITY_CHANGE"/>
-    </intent-filter>
-</receiver>
+        <receiver android:name=".service.ConnectionReceiver">
+            <intent-filter>
+                <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
+            </intent-filter>
+        </receiver>
+
+        <receiver android:name=".service.BootUpReciever">
+            <intent-filter>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
+            </intent-filter>
+        </receiver>
+
+        <service android:name=".service.WsService" />
 
     </application>
 

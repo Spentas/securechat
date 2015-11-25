@@ -3,6 +3,7 @@ package com.spentas.javad.securechat.adapter;
 import android.content.Context;
 import android.os.AsyncTask;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import com.spentas.javad.securechat.R;
 import com.spentas.javad.securechat.app.App;
 import com.spentas.javad.securechat.model.User;
+import com.spentas.javad.securechat.network.websocket.ConnectionManager;
 import com.spentas.javad.securechat.sqlite.DbHelper;
 import com.spentas.javad.securechat.utils.event.DataSetChangeEvent;
 import com.spentas.javad.securechat.view.cpb.CircularProgressButton;
@@ -54,6 +56,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.username.setText(mUsers.get(position).getUsername());
+        Log.i("Found friens", String.format("username : %s \n public key :\n %s",mUsers.get(position).getUsername(),mUsers.get(position).getPublicKey()));
 
 
     }
@@ -156,8 +159,9 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
             new ProgressBar((CircularProgressButton) v).execute(100);
             int position = getLayoutPosition();
             User user = mUsers.get(position);
-            mDb.addUsers(user);
+            mDb.addFriend(user);
             bus.post(produceDataSetChangeEvent());
+            ConnectionManager.getConnection(ConnectionManager.ConnectionType.WEBSOCKET).sendMessageToServer("hi");
         }
     }
 

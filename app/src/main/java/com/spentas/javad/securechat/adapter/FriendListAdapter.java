@@ -78,7 +78,7 @@ public class FriendListAdapter extends RecyclerView.Adapter<FriendListAdapter.Vi
 
       @Override
       public void onClick(View v) {
-      mBus.post(new FragmentCallback());
+          mBus.post(new FragmentCallback(mUsers.get(getAdapterPosition())));
       }
   }
 

@@ -57,16 +57,18 @@ public class App extends Application {
 
             @Override
             public void onActivityStarted(Activity activity) {
+                Log.i("APP","activity start");
 
             }
 
             @Override
             public void onActivityResumed(Activity activity) {
-
+                Log.i("APP","activity resumed");
             }
 
             @Override
             public void onActivityPaused(Activity activity) {
+                Log.i("APP","activity paused");
 
             }
 

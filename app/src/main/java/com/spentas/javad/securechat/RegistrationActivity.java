@@ -2,6 +2,7 @@ package com.spentas.javad.securechat;
 
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -12,12 +13,22 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.loopj.android.http.RequestParams;
+import com.spentas.javad.securechat.app.App;
+import com.spentas.javad.securechat.crypto.RSA;
+import com.spentas.javad.securechat.crypto.Util;
+import com.spentas.javad.securechat.model.User;
 import com.spentas.javad.securechat.network.NetworkConfig;
 import com.spentas.javad.securechat.network.webservice.RestfulRequest;
+import com.spentas.javad.securechat.sqlite.DbHelper;
+import com.spentas.javad.securechat.sqlite.SharedPreference;
 import com.spentas.javad.securechat.utils.Callback;
 import com.spentas.javad.securechat.utils.Utils;
 
 import org.json.JSONObject;
+
+import java.security.KeyPair;
+
+import javax.inject.Inject;
 
 import butterknife.Bind;
 import butterknife.ButterKnife;
@@ -28,6 +39,10 @@ import butterknife.OnClick;
  */
 public class RegistrationActivity extends AppCompatActivity implements Callback {
 
+    @Inject
+    DbHelper mDb;
+    @Inject
+    SharedPreference mshSharedPreference;
     @Bind(R.id.register_username_txt)
     EditText mUsername;
     @Bind(R.id.register_pass_txt)
@@ -40,13 +55,16 @@ public class RegistrationActivity extends AppCompatActivity implements Callback 
     TextInputLayout mUsernameLayout;
     @Bind(R.id.register_passconfirm_layout)
     TextInputLayout mPasswordConfirmationLayout;
+    private User mUser;
+    private KeyPair mKeyPair;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_registration);
         ButterKnife.bind(this);
-
+        ((App) App.getContext()).getComponent().inject(this);
         mUsername.addTextChangedListener(new CustomTextWatcher(mUsername));
         mPassword.addTextChangedListener(new CustomTextWatcher(mPassword));
         mPasswordConfirmation.addTextChangedListener(new CustomTextWatcher(mPasswordConfirmation));
@@ -54,32 +72,76 @@ public class RegistrationActivity extends AppCompatActivity implements Callback 
 
     @Override
     public void httpCallback(JSONObject object) {
+        mUser = new User();
+        mUser.setUsername(mUsername.getText().toString());
+        mUser.setPublicKey(Util.encodePublicKey(mKeyPair.getPublic()));
+        mUser.setPrivateKey(mKeyPair.getPrivate());
+        mDb.addUsers(mUser);
+        mshSharedPreference.storeLoginStatus(true);
         startActivity(new Intent(RegistrationActivity.this, MainActivity.class));
     }
 
     @Override
     public Context getContext() {
-        return null;
+        return this;
     }
 
     @OnClick(R.id.btnReg)
     public void onRegiterClick() {
 
-        String username = mUsername.getText().toString();
-        String password = mPassword.getText().toString();
-        if (Utils.isNotNull(username) && Utils.isNotNull(password) && mPasswordConfirmation.getText().toString().compareTo(mPassword.getText().toString()) == 0) {
-            if (!Utils.validate(username) && Utils.isPasswordValid(mPassword.getText().toString())) {
-                RequestParams params = new RequestParams();
-                params.put(NetworkConfig.REST_PUBLIC_KEY_PARAM,"public key");
-                params.put(NetworkConfig.REST_PASSWORD_PARAM, password);
-                params.put(NetworkConfig.REST_USERNAME_PARAM, username);
-                RestfulRequest.register(params, this);
-            }
-        } else
-            Toast.makeText(this, "Please fill the form, don't leave any field blank", Toast.LENGTH_SHORT).show();
+        generateKeyPair();
+
 
     }
 
+    public void generateKeyPair() {
+
+        new AsyncTask<Void, Void, Void>() {
+
+            @Override
+            protected Void doInBackground(Void... params) {
+                final long timeStarted = System.currentTimeMillis();
+                mKeyPair = RSA.generate();
+                System.out.println(Util.encodePrivateKey(mKeyPair.getPrivate()));
+                System.out.println("=======================");
+                System.out.println(Util.encodePublicKey(mKeyPair.getPublic()));
+                System.out.println("===========key pa============");
+                System.out.println(mKeyPair);
+                System.out.println("=============pri en==========");
+                System.out.println(mKeyPair.getPrivate());
+                return null;
+            }
+
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                Utils.progressDialog(RegistrationActivity.this).show();
+
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                Utils.progressDialog(RegistrationActivity.this).hide();
+                String username = mUsername.getText().toString();
+                String password = mPassword.getText().toString();
+
+                if (Utils.isNotNull(username) && Utils.isNotNull(password) && mPasswordConfirmation.getText().toString().compareTo(mPassword.getText().toString()) == 0) {
+                    if (!Utils.validate(username) && Utils.isPasswordValid(mPassword.getText().toString())) {
+                        RequestParams params = new RequestParams();
+                        params.put(NetworkConfig.REST_PUBLIC_KEY_PARAM, Util.encodePublicKey(mKeyPair.getPublic()));
+                        params.put(NetworkConfig.REST_PASSWORD_PARAM, password);
+                        params.put(NetworkConfig.REST_USERNAME_PARAM, username);
+                        RestfulRequest.register(params, RegistrationActivity.this);
+                    }
+                } else
+                    Toast.makeText(RegistrationActivity.this, "Please fill the form, don't leave any field blank", Toast.LENGTH_SHORT).show();
+
+            }
+        }.execute();
+
+
+    }
 
     public class CustomTextWatcher implements TextWatcher {
 
@@ -132,4 +194,5 @@ public class RegistrationActivity extends AppCompatActivity implements Callback 
             }
         }
     }
+
 }

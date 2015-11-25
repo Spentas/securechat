@@ -1,7 +1,7 @@
 package com.spentas.javad.securechat.model;
 
-import android.os.Parcel;
-import android.os.Parcelable;
+import java.security.PrivateKey;
+import java.security.PublicKey;
 
 /**
  * Created by javad on 11/12/2015.
@@ -9,19 +9,20 @@ import android.os.Parcelable;
 public class User  {
     private String image;
     private String username;
-    private String publickey;
-
+    private String publicKey;
+    private PrivateKey privateKey;
     @Override
     public String toString() {
-        return "User [username=" + username + ", publickey=" + publickey +", image"+image+ "]";
+        return "User [username=" + username + ", publicKey=" + publicKey +", image"+image+ "]";
     }
 
 
 
-    public User(String image, String username, String publickey) {
+    public User(String image, String username, String publickey, PrivateKey privateKey) {
         this.image = image;
         this.username = username;
-        this.publickey = publickey;
+        this.publicKey = publickey;
+        this.privateKey= privateKey;
     }
 
     public User() {
@@ -36,12 +37,12 @@ public class User  {
         this.username = username;
     }
     
-    public String getPublickey() {
-        return publickey;
+    public String getPublicKey() {
+        return publicKey;
     }
 
-    public void setPublickey(String publickey) {
-        this.publickey = publickey;
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
     }
 
     public String getImage() {
@@ -52,4 +53,11 @@ public class User  {
         this.image = image;
     }
 
+    public PrivateKey getPrivateKey() {
+        return privateKey;
+    }
+
+    public void setPrivateKey(PrivateKey privateKey) {
+        this.privateKey = privateKey;
+    }
 }

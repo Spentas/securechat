@@ -1,6 +1,7 @@
 package com.spentas.javad.securechat.network.webservice;
 
 import android.content.Context;
+import android.support.design.widget.TabLayout;
 import android.util.Log;
 import android.widget.Toast;
 
@@ -23,6 +24,7 @@ public class RestfulRequest {
     private static final String REST_REQUEST = "REST_REQUEST";
     private static boolean authenticated = false;
     private static Context context;
+    private final static String TAG = RestfulRequest.class.getName();
 
     public static void login(RequestParams params, final Callback callback) {
         context = callback.getContext();
@@ -74,15 +76,16 @@ public class RestfulRequest {
 
     }
 
-    public static void register(RequestParams params, final Context context) {
-        final com.spentas.javad.securechat.utils.Callback callback = (RegistrationActivity) context;
+    public static void register(RequestParams params, final Callback callback) {
+        context = callback.getContext();
         Utils.progressDialog(context).show();
 
         AsyncHttpClient httpClient = new AsyncHttpClient();
-        httpClient.get(NetworkConfig.BASE + NetworkConfig.REST_PORT + NetworkConfig.REST_FINDFRIEND_ENDPOINT, params, new TextHttpResponseHandler() {
+        httpClient.get(NetworkConfig.BASE + NetworkConfig.REST_PORT + NetworkConfig.REST_REGISTER_ENDPOINT, params, new TextHttpResponseHandler() {
             @Override
             public void onFailure(int statusCode, cz.msebera.android.httpclient.Header[] headers, String s, Throwable throwable) {
                 Utils.progressDialog(context).dismiss();
+                    Log.e(TAG, String.format("Request failed status code : s%", statusCode));
                 throwable.printStackTrace();
                 if (statusCode == 404) {
                     Toast.makeText(context, "Requested resource not found", Toast.LENGTH_LONG).show();
@@ -103,10 +106,11 @@ public class RestfulRequest {
                 try {
                     JSONObject jsonObject = new JSONObject(s);
                     if (jsonObject.getBoolean("status")) {
-                        System.out.println("register");
+                        Log.e(TAG, "registered successfully");
                         callback.httpCallback(jsonObject);
                     } else
-                        System.out.println("failed to login");
+                        Utils.showDialog(context,"This username already exist.");
+                        Log.e(TAG, "failed to register due to user existence");
 
                 } catch (JSONException e) {
                     e.printStackTrace();

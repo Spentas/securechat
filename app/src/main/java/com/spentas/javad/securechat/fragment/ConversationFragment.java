@@ -2,9 +2,12 @@ package com.spentas.javad.securechat.fragment;
 
 import android.app.Activity;
 import android.content.Context;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.text.InputType;
+import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,74 +15,104 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spentas.javad.securechat.R;
+import com.spentas.javad.securechat.app.App;
+import com.spentas.javad.securechat.model.Conversation;
+import com.spentas.javad.securechat.model.Message;
+import com.spentas.javad.securechat.network.websocket.Connection;
+import com.spentas.javad.securechat.network.websocket.ConnectionManager;
+import com.spentas.javad.securechat.network.websocket.WebSocketClient.Listener;
+import com.spentas.javad.securechat.sqlite.DbHelper;
+import com.spentas.javad.securechat.sqlite.SharedPreference;
+import com.spentas.javad.securechat.utils.MainThreadBus;
 import com.spentas.javad.securechat.utils.TouchEffect;
+import com.spentas.javad.securechat.utils.event.NewMessageEvent;
+import com.squareup.otto.Subscribe;
+
+import org.json.JSONObject;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
-import com.spentas.javad.securechat.model.Conversation;
+import javax.inject.Inject;
 
 /**
  * Created by javad on 10/30/2015.
  */
-public class ConversationFragment extends Activity implements View.OnClickListener {
-    private ArrayList<Conversation> convList;
-    public static final TouchEffect TOUCH = new TouchEffect();
+public class ConversationFragment extends Activity implements View.OnClickListener, Listener {
 
-    /** The chat adapter. */
+
+
+    @Inject
+    DbHelper mDb;
+    @Inject
+    ConnectionManager mConnectionManager;
+    @Inject
+    SharedPreference sh;
+    String me;
+    JSONObject jObj;
+    private Connection mConnection;
+    private List<Conversation> convList;
     private ChatAdapter adp;
-
-    /** The Editext to compose the message. */
     private EditText txt;
-
-    /** The user name of buddy. */
     private String buddy;
-
-    /** The date of last message in conversation. */
     private Date lastMsgDate;
-
-    /** Flag to hold if the activity is running or not. */
     private boolean isRunning;
-
-    /** The handler. */
+    private MainThreadBus mTbus;
+    public static final TouchEffect TOUCH = new TouchEffect();
     private static Handler handler;
-
-    /* (non-Javadoc)
-     * @see android.support.v4.app.FragmentActivity#onCreate(android.os.Bundle)
-     */
     @Override
-    protected void onCreate(Bundle savedInstanceState)
-    {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.fragment_conversation);
+        ((App) getApplication()).getComponent().inject(this);
+        buddy = getIntent().getStringExtra("username");
+        me = sh.getUserInfo().get("username");
 
-        convList = new ArrayList<Conversation>();
+        convList = mDb.getChatHistoryById(String.format("%s:%s", me, buddy));
+        Log.i("conv", String.valueOf(convList.size()));
         ListView list = (ListView) findViewById(R.id.conversation_list);
         adp = new ChatAdapter();
         list.setAdapter(adp);
         list.setTranscriptMode(AbsListView.TRANSCRIPT_MODE_ALWAYS_SCROLL);
         list.setStackFromBottom(true);
-
         txt = (EditText) findViewById(R.id.txt);
         txt.setInputType(InputType.TYPE_CLASS_TEXT
                 | InputType.TYPE_TEXT_FLAG_MULTI_LINE);
-
         setTouchNClick(R.id.btnSend);
-
-//        buddy = getIntent().getStringExtra(Const.EXTRA_DATA);
 //        getActionBar().setTitle(buddy);
 
         handler = new Handler();
+        mTbus = MainThreadBus.getInstance();
+
+        mConnection = mConnectionManager.getConnection(ConnectionManager.ConnectionType.WEBSOCKET);
+        // ((WsConnection) mConnection).setListener(this);
     }
 
-    public View setTouchNClick(int id)
-    {
+
+    @Subscribe
+    public void incommingMessage(NewMessageEvent event) {
+        Log.i("conv", event.getMsg().getFrom() + buddy);
+        Message msg = event.getMsg();
+      if (msg.getFrom().equalsIgnoreCase(buddy)) {
+        Conversation c = new Conversation();
+        c.setMsg(msg.getMessage());
+        c.setSender("");
+        convList.add(c);
+        adp.notifyDataSetChanged();
+        }
+    }
+
+    public View setTouchNClick(int id) {
 
         View v = setClick(id);
         if (v != null)
@@ -90,12 +123,10 @@ public class ConversationFragment extends Activity implements View.OnClickListen
     /**
      * Sets the click listener for a view with given id.
      *
-     * @param id
-     *            the id
+     * @param id the id
      * @return the view on which listener is applied
      */
-    public View setClick(int id)
-    {
+    public View setClick(int id) {
 
         View v = findViewById(id);
         if (v != null)
@@ -107,10 +138,8 @@ public class ConversationFragment extends Activity implements View.OnClickListen
      * @see android.view.View.OnClickListener#onClick(android.view.View)
      */
     @Override
-    public void onClick(View v)
-    {
-        if (v.getId() == R.id.btnSend)
-        {
+    public void onClick(View v) {
+        if (v.getId() == R.id.btnSend) {
             sendMessage();
         }
 
@@ -120,35 +149,28 @@ public class ConversationFragment extends Activity implements View.OnClickListen
      * @see android.support.v4.app.FragmentActivity#onResume()
      */
     @Override
-    protected void onResume()
-    {
+    protected void onResume() {
         super.onResume();
+        mTbus.register(this);
         isRunning = true;
         //loadConversationList();
-    }
-
-    /* (non-Javadoc)
-     * @see android.support.v4.app.FragmentActivity#onPause()
-     */
-    @Override
-    protected void onPause()
-    {
-        super.onPause();
-        isRunning = false;
     }
 
     /* (non-Javadoc)
      * @see com.socialshare.custom.CustomFragment#onClick(android.view.View)
      */
 
-
-    /**
-     * Call this method to Send message to opponent. It does nothing if the text
-     * is empty otherwise it creates a Parse object for Chat message and send it
-     * to Parse server.
+    /* (non-Javadoc)
+     * @see android.support.v4.app.FragmentActivity#onPause()
      */
-    private void sendMessage()
-    {
+    @Override
+    protected void onPause() {
+        super.onPause();
+        isRunning = false;
+        mTbus.unregister(this);
+    }
+
+    private void sendMessage() {
         if (txt.length() == 0)
             return;
 
@@ -156,33 +178,48 @@ public class ConversationFragment extends Activity implements View.OnClickListen
         imm.hideSoftInputFromWindow(txt.getWindowToken(), 0);
 
         String s = txt.getText().toString();
-//		final Conversation c = new Conversation(s, new Date(),
-//				UserList.user.getUsername());
-//		c.setStatus(Conversation.STATUS_SENDING);
         final Conversation c = new Conversation(s, new Date(),
-                "User");
+                me);
         c.setStatus(Conversation.STATUS_SENDING);
         convList.add(c);
         adp.notifyDataSetChanged();
         txt.setText(null);
+        new AsyncTask<String, Void, Integer>() {
 
-//		ParseObject po = new ParseObject("Chat");
-//		po.put("sender", UserList.user.getUsername());
-//		po.put("receiver", buddy);
-//		// po.put("createdAt", "");
-//		po.put("message", s);
-//		po.saveEventually(new SaveCallback() {
-//			@Override
-//			public void done(ParseException e)
-//			{
-//
-//				if (e == null)
-//					c.setStatus(Conversation.STATUS_SENT);
-//				else
-//					c.setStatus(Conversation.STATUS_FAILED);
-//				adp.notifyDataSetChanged();
-//			}
-//		});
+            @Override
+            protected Integer doInBackground(String... params) {
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+
+                Message msg = new Message();
+                msg.setFrom(me);
+                msg.setTo(buddy);
+                msg.setFlag("message");
+                msg.setMessage(params[0]);
+                mDb.addMessage(msg, String.format("%s:%s", me, buddy));
+                String jsonString = null;
+                ObjectMapper mapper = new ObjectMapper();
+                try {
+                    jsonString = mapper.writeValueAsString(msg);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+                mConnection.sendMessageToServer(jsonString);
+                int index = Integer.parseInt(params[1]);
+                return index;
+            }
+
+            @Override
+            protected void onPostExecute(Integer index) {
+                super.onPostExecute(index);
+                convList.get(index).setStatus(Conversation.STATUS_SENT);
+                adp.notifyDataSetChanged();
+            }
+        }.execute(s, String.valueOf(convList.indexOf(c)));
+
     }
 
     /**
@@ -245,19 +282,69 @@ public class ConversationFragment extends Activity implements View.OnClickListen
 //
 //    }
 
+    /* (non-Javadoc)
+     * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        if (item.getItemId() == android.R.id.home) {
+            finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onConnect() {
+    }
+
+    @Override
+    public void onMessage(String message) {
+
+       // new JsonAsyncTask().execute(message);
+
+
+//        JSONObject jObj = null;
+//        try {
+//            jObj = new JSONObject(message);
+//            String flag = jObj.getString("flag");
+//
+//            String msg = jObj.getString("message");
+//        final Conversation c = new Conversation(message, new Date(),
+//                "dummy");
+//            c.setMsg(flag.equalsIgnoreCase("self") ? message : msg);
+//        convList.add(c);
+//        adp.notifyDataSetChanged();
+//        } catch (JSONException e) {
+//            e.printStackTrace();
+//        }
+    }
+
+    @Override
+    public void onMessage(byte[] data) {
+
+    }
+
+    @Override
+    public void onDisconnect(int code, String reason) {
+
+    }
+
+    @Override
+    public void onError(Exception error) {
+
+    }
+
     /**
      * The Class ChatAdapter is the adapter class for Chat ListView. This
      * adapter shows the Sent or Receieved Chat message in each list item.
      */
-    private class  ChatAdapter extends BaseAdapter
-    {
+    private class ChatAdapter extends BaseAdapter {
 
         /* (non-Javadoc)
          * @see android.widget.Adapter#getCount()
          */
         @Override
-        public int getCount()
-        {
+        public int getCount() {
             return convList.size();
         }
 
@@ -265,8 +352,7 @@ public class ConversationFragment extends Activity implements View.OnClickListen
          * @see android.widget.Adapter#getItem(int)
          */
         @Override
-        public Conversation getItem(int arg0)
-        {
+        public Conversation getItem(int arg0) {
             return convList.get(arg0);
         }
 
@@ -274,8 +360,7 @@ public class ConversationFragment extends Activity implements View.OnClickListen
          * @see android.widget.Adapter#getItemId(int)
          */
         @Override
-        public long getItemId(int arg0)
-        {
+        public long getItemId(int arg0) {
             return arg0;
         }
 
@@ -283,52 +368,83 @@ public class ConversationFragment extends Activity implements View.OnClickListen
          * @see android.widget.Adapter#getView(int, android.view.View, android.view.ViewGroup)
          */
         @Override
-        public View getView(int pos, View v, ViewGroup arg2)
-        {
+        public View getView(int pos, View convertView, ViewGroup parent) {
             Conversation c = getItem(pos);
-            if (c.isSent())
-                v = getLayoutInflater().inflate(R.layout.raw_conversation_sender, null);
-            else
-                v = getLayoutInflater().inflate(R.layout.raw_conversation_reciever, null);
+            ViewHolder holder;
+            if (convertView == null) {
+                convertView = getLayoutInflater().inflate(R.layout.raw_bubble, null);
+                holder = new ViewHolder();
+                holder.rootLayout = (LinearLayout) convertView.findViewById(R.id.root_bubble);
+                holder.msgLayout = (LinearLayout) convertView.findViewById(R.id.msg_layout);
+                holder.msg = (TextView) convertView.findViewById(R.id.lbl2);
+                holder.msgTime = (TextView) convertView.findViewById(R.id.lbl1);
+                holder.msgStatus = (TextView) convertView.findViewById(R.id.lbl3);
+                convertView.setTag(holder);
+            } else
+                holder = (ViewHolder) convertView.getTag();
 
-            TextView lbl = (TextView) v.findViewById(R.id.lbl1);
-            SimpleDateFormat  df = new SimpleDateFormat("h:mm a");
+            if (c.getSender().equalsIgnoreCase(me)) {
+                holder.msgLayout.setBackgroundResource(R.drawable.right_bubble);
+                holder.rootLayout.setGravity(Gravity.RIGHT);
+            } else {
+                holder.msgLayout.setBackgroundResource(R.drawable.left_bubble);
+                holder.rootLayout.setGravity(Gravity.LEFT);
+
+            }
+
+            SimpleDateFormat df = new SimpleDateFormat("h:mm a");
 //            lbl.setText(DateUtils.getRelativeDateTimeString(ConversationFragment.this, c
 //                            .getDate().getTime(), DateUtils.SECOND_IN_MILLIS,
 //                    DateUtils.DAY_IN_MILLIS, 0));
-            lbl.setText(df.format(Calendar.getInstance().getTime()));
+            holder.msgTime.setText(df.format(Calendar.getInstance().getTime()));
 
-            lbl = (TextView) v.findViewById(R.id.lbl2);
-            lbl.setText(c.getMsg());
+            holder.msg.setText(c.getMsg());
 
-            lbl = (TextView) v.findViewById(R.id.lbl3);
-            if (c.isSent())
-            {
+
+            if (c.getSender().equalsIgnoreCase("User")) {
                 if (c.getStatus() == Conversation.STATUS_SENT)
-                    lbl.setText("Delivered");
+                    holder.msgStatus.setText("Sent");
                 else if (c.getStatus() == Conversation.STATUS_SENDING)
-                    lbl.setText("Sending...");
+                    holder.msgStatus.setText("Sending...");
                 else
-                    lbl.setText("Failed");
-            }
-            else
-                lbl.setText("");
+                    holder.msgStatus.setText("Failed");
+            } else
+                holder.msgStatus.setText("");
 
-            return v;
+            return convertView;
         }
+
+
+        private class ViewHolder {
+            TextView msgTime, msg, msgStatus;
+            LinearLayout rootLayout;
+            LinearLayout msgLayout;
+        }
+
 
     }
 
-    /* (non-Javadoc)
-     * @see android.app.Activity#onOptionsItemSelected(android.view.MenuItem)
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item)
-    {
-        if (item.getItemId() == android.R.id.home)
-        {
-            finish();
+
+    private class JsonAsyncTask extends AsyncTask<String, Void, String> {
+
+        @Override
+        protected String doInBackground(String... params) {
+            String s = params[0];
+            Conversation c = new Conversation(s, new Date(),
+                    "dummy");
+            c.setMsg(s);
+            convList.add(c);
+
+
+            return s;
         }
-        return super.onOptionsItemSelected(item);
+
+        @Override
+        protected void onPostExecute(String jsonString) {
+            adp.notifyDataSetChanged();
+            super.onPostExecute(jsonString);
+        }
     }
+
+
 }

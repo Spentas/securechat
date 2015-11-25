@@ -53,6 +53,11 @@ public class WebSocketClient {
         sTrustManagers = tm;
     }
 
+    public void setmListener (Listener listener){
+        mListener = listener;
+    }
+
+
     public WebSocketClient(URI uri, Listener listener, List<BasicNameValuePair> extraHeaders) {
         mURI          = uri;
         mListener     = listener;

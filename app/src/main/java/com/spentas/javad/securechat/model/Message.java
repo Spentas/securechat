@@ -9,10 +9,13 @@ public class Message {
     private String from;
     private String to;
     private String time;
-    private String type;
+    private String flag;
     private String extra;
     private String message;
+    private String secretKey;
 
+
+    private String type;
     boolean isMine;
 
     boolean isStatusMessage;
@@ -21,35 +24,41 @@ public class Message {
      * @param from
      * @param to
      * @param time
-     * @param type
+     * @param flag
      * @param extra
      * @param message
      */
-    public Message(long id, String from, String to, String time, String type,
+    public Message(long id, String from, String to, String time, String flag,
                    String extra, String message) {
         this.id = id;
         this.from = from;
         this.to = to;
         this.time = time;
-        this.type = type;
+        this.flag = flag;
         this.extra = extra;
         this.message = message;
     }
+
+    public Message(){
+
+    }
+
+
     /**
      * @param from
      * @param to
      * @param time
-     * @param type
+     * @param flag
      * @param extra
      * @param message
      * @param isMine
      */
-    public Message(String from, String to, String time, String type,
+    public Message(String from, String to, String time, String flag,
                    String extra, String message, boolean isMine) {
         this.from = from;
         this.to = to;
         this.time = time;
-        this.type = type;
+        this.flag = flag;
         this.extra = extra;
         this.message = message;
         this.isMine = isMine;
@@ -67,6 +76,22 @@ public class Message {
         this.message = message;
         this.isMine = false;
         this.isStatusMessage = status;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    public void setType(String type) {
+        this.type = type;
+    }
+
+    public void setIsMine(boolean isMine) {
+        this.isMine = isMine;
+    }
+
+    public void setIsStatusMessage(boolean isStatusMessage) {
+        this.isStatusMessage = isStatusMessage;
     }
 
     public String getMessage() {
@@ -126,12 +151,12 @@ public class Message {
         this.time = time;
     }
 
-    public String getType() {
-        return type;
+    public String getFlag() {
+        return flag;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setFlag(String flag) {
+        this.flag = flag;
     }
 
     public String getExtra() {
@@ -149,7 +174,7 @@ public class Message {
     @Override
     public String toString() {
         return "Message [id=" + id + ", from=" + from + ", to=" + to
-                + ", time=" + time + ", type=" + type + ", extra=" + extra
+                + ", time=" + time + ", flag=" + flag + ", extra=" + extra
                 + ", message=" + message + ", isMine=" + isMine
                 + ", isStatusMessage=" + isStatusMessage + "]";
     }

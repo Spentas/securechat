@@ -47,7 +47,7 @@ public class FriendListFragment extends Fragment {
     RecyclerView mRecyclerView;
 
     private Object mLock = new Object();
-    private static final String TAG = "RecyclerViewFragment";
+    private static final String TAG = "FriendListFragment";
     private static final int SPAN_COUNT = 2;
     private static final int DATASET_COUNT = 60;
     private FriendListAdapter mFriendListAdapter;
@@ -74,11 +74,9 @@ public class FriendListFragment extends Fragment {
 
 
 
-    @Produce FragmentCallback fragmentCallback(){
-        return new FragmentCallback();
-    }
 
-    @Subscribe public void onDataSetChangeEvent(DataSetChangeEvent event){
+    @Subscribe
+    public void onDataSetChangeEvent(DataSetChangeEvent event){
         mFriends.clear();
        synchronized (mLock) {
            mFriends.addAll(mDb.fetchAllUsers());

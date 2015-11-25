@@ -3,6 +3,7 @@ package com.spentas.javad.securechat;
 import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.FragmentManager;
@@ -25,6 +26,7 @@ import com.spentas.javad.securechat.model.User;
 import com.spentas.javad.securechat.network.webservice.RestfulRequest;
 import com.spentas.javad.securechat.network.websocket.Connection;
 import com.spentas.javad.securechat.network.websocket.ConnectionManager;
+import com.spentas.javad.securechat.service.WsService;
 import com.spentas.javad.securechat.utils.Callback;
 import com.spentas.javad.securechat.utils.Log;
 import com.spentas.javad.securechat.utils.Utils;
@@ -83,11 +85,10 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
         //
         // Log.i("info",connection.toString());
         viewPager.clearOnPageChangeListeners();
-
         viewPager.addOnPageChangeListener(new TabLayoutOnPageChangeListener(tabLayout));
         mFragmentManager = getSupportFragmentManager();
         mConnection = mConnectionManager.getConnection(ConnectionManager.ConnectionType.WEBSOCKET);
-
+        startService(new Intent(this, WsService.class));
     }
 
     @Override
@@ -122,15 +123,16 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        System.out.println("on activity result");
         super.onActivityResult(requestCode, resultCode, data);
     }
 
+
+
     @Override
     protected void onPause() {
-        mConnection.disConnect();
+      //  mConnection.disConnect();
         mBus.unregister(this);
-        Log.i(String.format("Connection status : %b", mConnection.isConnected()));
+        Log.i(String.format("Connection status on pause: %b", mConnection.isConnected()));
         super.onPause();
 
     }
@@ -139,8 +141,23 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
     protected void onResume() {
         mBus.register(this);
         mConnection.connect();
-        Log.i(String.format("Connection status : %b", mConnection.isConnected()));
+        Log.i(String.format("Connection status on resume : %b", mConnection.isConnected()));
         super.onResume();
+
+    }
+
+    @Override
+    protected void onStop() {
+        Log.i(String.format("main activity : stop"));
+
+        super.onStop();
+    }
+
+    @Override
+    protected void onDestroy() {
+        Log.i(String.format("main activity : destroy"));
+
+        super.onDestroy();
     }
 
     @Override
@@ -150,8 +167,6 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
         params.put("username", query);
         params.put("token", "pass");
         RestfulRequest.sendRequest(params, this, RestfulRequest.RequestType.FINDFRIEND);
-
-
         return false;
     }
 
@@ -187,7 +202,10 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
 
     @Subscribe
     public void fragmentCallback(FragmentCallback fc){
-        startActivity(new Intent(MainActivity.this, ConversationFragment.class));
+        User user = fc.getUser();
+        Intent intent = new Intent(MainActivity.this, ConversationFragment.class);
+        intent.putExtra("username",user.getUsername());
+        startActivity(intent);
 
     }
 

@@ -101,6 +101,12 @@ public class WsConnection implements Connection {
         System.out.println("client " + client);
     }
 
+
+    public void setListener(WebSocketClient.Listener listener){
+        client.setmListener(listener);
+    }
+
+
     /**
      * Method to send message to web socket server
      */
@@ -196,13 +202,14 @@ public class WsConnection implements Connection {
     }
 
     @Override
-    public String getReference() {
+    public String getInstance() {
         return client.toString();
     }
 
     @Override
     public boolean connect() {
         if (client != null & !client.isConnected()) {
+            Log.i(TAG,"Connected");
             client.connect();
             return true;
         }
@@ -212,6 +219,7 @@ public class WsConnection implements Connection {
     @Override
     public boolean disConnect() {
         if (client != null & client.isConnected()) {
+            Log.i(TAG,"Disconnected");
             client.disconnect();
             return true;
         }
