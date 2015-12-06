@@ -78,6 +78,7 @@ public class RegistrationActivity extends AppCompatActivity implements Callback 
         mUser.setPrivateKey(mKeyPair.getPrivate());
         mDb.addUsers(mUser);
         mshSharedPreference.storeLoginStatus(true);
+        mshSharedPreference.storeUserInfo(mUsername.getText().toString(),"***");
         startActivity(new Intent(RegistrationActivity.this, MainActivity.class));
     }
 

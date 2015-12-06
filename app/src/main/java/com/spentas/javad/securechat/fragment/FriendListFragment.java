@@ -6,6 +6,7 @@ import android.support.v4.app.Fragment;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +17,7 @@ import com.spentas.javad.securechat.adapter.FriendListAdapter;
 import com.spentas.javad.securechat.app.App;
 import com.spentas.javad.securechat.model.User;
 import com.spentas.javad.securechat.sqlite.DbHelper;
+import com.spentas.javad.securechat.utils.MainThreadBus;
 import com.spentas.javad.securechat.utils.event.DataSetChangeEvent;
 import com.spentas.javad.securechat.utils.DividerItemDecoration;
 import com.spentas.javad.securechat.utils.event.FragmentCallback;
@@ -53,6 +55,7 @@ public class FriendListFragment extends Fragment {
     private FriendListAdapter mFriendListAdapter;
     private RecyclerView.LayoutManager mLayoutManager;
     private List<User> mFriends;
+    private MainThreadBus mTbus;
 
 
     @Override
@@ -68,7 +71,7 @@ public class FriendListFragment extends Fragment {
         mRecyclerView.setLayoutManager(mLayoutManager);
         mRecyclerView.setAdapter(mFriendListAdapter);
         mRecyclerView.setItemAnimator(new DefaultItemAnimator());
-
+        mTbus = MainThreadBus.getInstance();
         return view;
     }
 
@@ -78,6 +81,7 @@ public class FriendListFragment extends Fragment {
     @Subscribe
     public void onDataSetChangeEvent(DataSetChangeEvent event){
         mFriends.clear();
+        Log.i(TAG, "notified");
        synchronized (mLock) {
            mFriends.addAll(mDb.fetchAllUsers());
        }
@@ -88,14 +92,15 @@ public class FriendListFragment extends Fragment {
 
     @Override
     public void onPause() {
+
         super.onPause();
-        bus.unregister(this);
+        mTbus.unregister(this);
     }
 
     @Override
     public void onResume() {
         super.onResume();
-        bus.register(this);
+        mTbus.register(this);
     }
 
 

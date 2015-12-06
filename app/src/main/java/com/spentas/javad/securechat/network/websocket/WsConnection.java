@@ -9,7 +9,10 @@ import java.net.URI;
 import java.net.URLEncoder;
 import java.util.Locale;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spentas.javad.securechat.app.App;
+import com.spentas.javad.securechat.model.Message;
 import com.spentas.javad.securechat.network.NetworkConfig;
 import com.spentas.javad.securechat.sqlite.SharedPreference;
 
@@ -111,11 +114,18 @@ public class WsConnection implements Connection {
      * Method to send message to web socket server
      */
     @Override
-    public void sendMessageToServer(String message) {
+    public void sendMessageToServer(Message message) {
         if (client != null && client.isConnected()) {
             Log.e(TAG,String.format( "%s was sent to the server",message));
+            String json = null;
+            ObjectMapper mapper = new ObjectMapper();
+            try {
+                json = mapper.writeValueAsString(message);
+                client.send(json);
 
-            client.send(message);
+            } catch (JsonProcessingException e) {
+                e.printStackTrace();
+            }
         }
     }
 

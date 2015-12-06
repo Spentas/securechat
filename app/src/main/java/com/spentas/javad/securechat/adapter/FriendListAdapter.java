@@ -13,6 +13,7 @@ import com.spentas.javad.securechat.R;
 import com.spentas.javad.securechat.app.App;
 import com.spentas.javad.securechat.model.User;
 import com.spentas.javad.securechat.sqlite.DbHelper;
+import com.spentas.javad.securechat.utils.MainThreadBus;
 import com.spentas.javad.securechat.utils.event.FragmentCallback;
 import com.squareup.otto.Bus;
 

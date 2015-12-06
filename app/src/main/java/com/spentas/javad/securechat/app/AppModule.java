@@ -59,7 +59,7 @@ public class AppModule {
         return new DbHelper(ctx);
     }
 
-    @Provides
-    ConnectionManager provideConnectionManager(){return new ConnectionManager();}
+//    @Provides
+//    ConnectionManager provideConnectionManager(){return new ConnectionManager();}
 
 }

@@ -12,7 +12,7 @@ public class Message {
     private String flag;
     private String extra;
     private String message;
-    private String secretKey;
+    private String publicKey;
 
 
     private String type;
@@ -163,10 +163,18 @@ public class Message {
         return extra;
     }
 
+    public String getPublicKey() {
+        return publicKey;
+    }
+
+    public void setPublicKey(String publicKey) {
+        this.publicKey = publicKey;
+    }
 
     public void setExtra(String extra) {
         this.extra = extra;
     }
+
 
     /* (non-Javadoc)
      * @see java.lang.Object#toString()
@@ -178,5 +186,6 @@ public class Message {
                 + ", message=" + message + ", isMine=" + isMine
                 + ", isStatusMessage=" + isStatusMessage + "]";
     }
+
 
 }

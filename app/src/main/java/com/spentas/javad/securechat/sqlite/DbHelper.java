@@ -32,7 +32,7 @@ public class DbHelper extends SQLiteOpenHelper {
     public static final String COLUMN_TOKEN = "token";
     public static final String COLUMN_UNREAD = "unread";
     public static final String COLUMN_USER_PUBLIC_KEY = "pbk";
-
+    public static final String COLUMN_SYMMETRIC_KEY="symmetric_key";
 
     public static final String TABLE_CHAT = "chat";
     public static final String COLUMN_CHAT_ID = "chat_id";
@@ -78,7 +78,7 @@ public class DbHelper extends SQLiteOpenHelper {
             + " text not null, " + COLUMN_AVATAR + " text," + COLUMN_JID
             + " text," + COLUMN_LAST
             + " text," + COLUMN_TOKEN + " text," + COLUMN_UNREAD + " text,"
-            + " text," + COLUMN_LAST_MSG + " text,"+ COLUMN_USER_PUBLIC_KEY + " text);";
+            + " text," + COLUMN_LAST_MSG + " text,"+COLUMN_SYMMETRIC_KEY + " text, "+ COLUMN_USER_PUBLIC_KEY + " text);";
 
     public DbHelper(Context context) {
             super(context, DATABASE_NAME, null, DATABASE_VERSION);
@@ -134,6 +134,10 @@ public class DbHelper extends SQLiteOpenHelper {
 
     }
 
+    public void deleteAllFriends(){
+        SQLiteDatabase db= this.getWritableDatabase();
+        db.delete(TABLE_FRIENDS, null, null);
+    }
     public void addFriend(User user) {
         db = getWritableDatabase();
         try {
@@ -142,8 +146,27 @@ public class DbHelper extends SQLiteOpenHelper {
             cv.put(COLUMN_NAME, user.getUsername());
             cv.put(COLUMN_AVATAR, user.getImage());
             cv.put(COLUMN_USER_PUBLIC_KEY,user.getPublicKey());
-            long r = db.insert(TABLE_FRIENDS, null, cv);
 
+             db.insert(TABLE_FRIENDS, null, cv);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+
+        }
+        db.close();
+
+    }
+    public void addFriend(User user,String key) {
+        db = getWritableDatabase();
+        try {
+
+            ContentValues cv = new ContentValues();
+            cv.put(COLUMN_NAME, user.getUsername());
+            cv.put(COLUMN_USER_PUBLIC_KEY,user.getPublicKey());
+            cv.put(COLUMN_SYMMETRIC_KEY, key);
+
+            db.insert(TABLE_FRIENDS, null, cv);
+            Log.i("db", "new friend added");
         } catch (Exception e) {
             e.printStackTrace();
 
@@ -227,6 +250,19 @@ public class DbHelper extends SQLiteOpenHelper {
         return history;
     }
 
+    public String getRsaKey(String type){
+        String key="";
+        try {
+            db = this.getWritableDatabase();
+            String query = "SELECT * from " + TABLE_USER + ";";
+            Cursor c = db.rawQuery(query, null);
+            c.moveToFirst();
+            key = type.equalsIgnoreCase("pbk") ? c.getString(c.getColumnIndex(COLUMN_USER_PUBLIC_KEY)) : c.getString(c.getColumnIndex(COLUMN_USER_PRIVATE_KEY));
+            c.close();
+        }catch(Exception e){}
+
+        return key;
+    }
     public List<Conversation> getChatHistoryById(String chatId) {
 
         List<Conversation> history = new ArrayList<Conversation>();
@@ -271,5 +307,14 @@ public class DbHelper extends SQLiteOpenHelper {
         }
         db.close();
         return isStored;
+    }
+    public void updateKey(String key, String username){
+        try {
+            ContentValues cv = new ContentValues();
+            cv.put(COLUMN_SYMMETRIC_KEY, key);
+            db.update(TABLE_FRIENDS, cv, COLUMN_NAME + "=" + username, null);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 }

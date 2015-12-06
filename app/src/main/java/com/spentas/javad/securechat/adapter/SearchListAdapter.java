@@ -11,9 +11,12 @@ import android.widget.TextView;
 
 import com.spentas.javad.securechat.R;
 import com.spentas.javad.securechat.app.App;
+import com.spentas.javad.securechat.model.Message;
 import com.spentas.javad.securechat.model.User;
 import com.spentas.javad.securechat.network.websocket.ConnectionManager;
 import com.spentas.javad.securechat.sqlite.DbHelper;
+import com.spentas.javad.securechat.sqlite.SharedPreference;
+import com.spentas.javad.securechat.utils.MainThreadBus;
 import com.spentas.javad.securechat.utils.event.DataSetChangeEvent;
 import com.spentas.javad.securechat.view.cpb.CircularProgressButton;
 import com.squareup.otto.Bus;
@@ -35,6 +38,9 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
     Bus bus;
     @Inject
     DbHelper mDb;
+    @Inject
+    SharedPreference mSh;
+    private MainThreadBus mTbus;
     private Context mContext;
     private List<User> mUsers;
 
@@ -42,12 +48,13 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
         ((App) App.getContext()).getComponent().inject(this);
         this.mContext = mContext;
         this.mUsers = mUsers;
-        bus.register(this);
+        mTbus = MainThreadBus.getInstance();
+        mTbus.register(this);
     }
-
+    View view;
     @Override
     public ViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext()).inflate(R.layout.raw_searchlist, parent, false);
+        view = LayoutInflater.from(parent.getContext()).inflate(R.layout.raw_searchlist, parent, false);
         ViewHolder viewHolder;
         viewHolder = new ViewHolder(view);
         return viewHolder;
@@ -56,8 +63,8 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.username.setText(mUsers.get(position).getUsername());
-        Log.i("Found friens", String.format("username : %s \n public key :\n %s",mUsers.get(position).getUsername(),mUsers.get(position).getPublicKey()));
 
+        Log.i("Found friens", String.format("username : %s \n public key :\n %s",mUsers.get(position).getUsername(),mUsers.get(position).getPublicKey()));
 
     }
 
@@ -79,14 +86,14 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
 
     public void clear() {
         synchronized (mLock) {
-            mUsers.clear();
+           mUsers.clear();
         }
 
     }
 
     @Override
     protected void finalize() throws Throwable {
-        bus.unregister(this);
+        mTbus.unregister(this);
         super.finalize();
     }
 
@@ -95,7 +102,7 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
     private static class ProgressBar extends AsyncTask<Integer, Integer, Integer> {
         private CircularProgressButton btn;
 
-        public ProgressBar(CircularProgressButton btn) {
+        public ProgressBar(CircularProgressButton btn ) {
             this.btn = btn;
         }
 
@@ -160,8 +167,14 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
             int position = getLayoutPosition();
             User user = mUsers.get(position);
             mDb.addFriend(user);
-            bus.post(produceDataSetChangeEvent());
-            ConnectionManager.getConnection(ConnectionManager.ConnectionType.WEBSOCKET).sendMessageToServer("hi");
+            mTbus.post(produceDataSetChangeEvent());
+            Message msg = new Message();
+            msg.setTo(mUsers.get(position).getUsername());
+            msg.setFrom(mSh.getUserInfo().get("username"));
+            msg.setFlag("skey");
+            msg.setMessage("aes");
+            msg.setPublicKey(mDb.getRsaKey("pbk"));
+            ConnectionManager.getConnection(ConnectionManager.ConnectionType.WEBSOCKET).sendMessageToServer(msg);
         }
     }
 

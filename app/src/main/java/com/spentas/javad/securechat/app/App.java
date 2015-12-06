@@ -21,8 +21,7 @@ import javax.inject.Inject;
  * Created by javad on 10/29/2015.
  */
 public class App extends Application {
-    @Inject
-    ConnectionManager connectionManager;
+
     private AppComponent component;
     private Connection connection;
     private static Context mContext;
@@ -41,7 +40,7 @@ public class App extends Application {
     }
 
     public Connection getConnection(){
-        return connectionManager.getConnection(ConnectionManager.ConnectionType.WEBSOCKET);
+        return ConnectionManager.getConnection(ConnectionManager.ConnectionType.WEBSOCKET);
     }
 
     public AppComponent getComponent(){

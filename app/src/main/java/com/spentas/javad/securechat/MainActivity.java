@@ -54,8 +54,6 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
     private static Menu mMenu;
     @Inject
     Bus mBus;
-    @Inject
-    ConnectionManager mConnectionManager;
     @Bind(R.id.tabs)
     TabLayout tabLayout;
     @Bind(R.id.toolbar)
@@ -87,7 +85,7 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
         viewPager.clearOnPageChangeListeners();
         viewPager.addOnPageChangeListener(new TabLayoutOnPageChangeListener(tabLayout));
         mFragmentManager = getSupportFragmentManager();
-        mConnection = mConnectionManager.getConnection(ConnectionManager.ConnectionType.WEBSOCKET);
+        mConnection = ConnectionManager.getConnection(ConnectionManager.ConnectionType.WEBSOCKET);
         startService(new Intent(this, WsService.class));
     }
 

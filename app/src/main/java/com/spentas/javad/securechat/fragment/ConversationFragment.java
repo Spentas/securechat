@@ -55,8 +55,6 @@ public class ConversationFragment extends Activity implements View.OnClickListen
     @Inject
     DbHelper mDb;
     @Inject
-    ConnectionManager mConnectionManager;
-    @Inject
     SharedPreference sh;
     String me;
     JSONObject jObj;
@@ -94,7 +92,7 @@ public class ConversationFragment extends Activity implements View.OnClickListen
         handler = new Handler();
         mTbus = MainThreadBus.getInstance();
 
-        mConnection = mConnectionManager.getConnection(ConnectionManager.ConnectionType.WEBSOCKET);
+        mConnection = ConnectionManager.getConnection(ConnectionManager.ConnectionType.WEBSOCKET);
         // ((WsConnection) mConnection).setListener(this);
     }
 
@@ -200,14 +198,8 @@ public class ConversationFragment extends Activity implements View.OnClickListen
                 msg.setFlag("message");
                 msg.setMessage(params[0]);
                 mDb.addMessage(msg, String.format("%s:%s", me, buddy));
-                String jsonString = null;
-                ObjectMapper mapper = new ObjectMapper();
-                try {
-                    jsonString = mapper.writeValueAsString(msg);
-                } catch (JsonProcessingException e) {
-                    e.printStackTrace();
-                }
-                mConnection.sendMessageToServer(jsonString);
+
+                mConnection.sendMessageToServer(msg);
                 int index = Integer.parseInt(params[1]);
                 return index;
             }

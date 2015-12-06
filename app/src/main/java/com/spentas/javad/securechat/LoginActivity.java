@@ -84,6 +84,7 @@ public class LoginActivity extends ActionBarActivity implements com.spentas.java
 
     @Override
     public void httpCallback(JSONObject object) {
+        sharedPreference.storeUserInfo(username,"***");
         sharedPreference.storeLoginStatus(true);
         startActivity(new Intent(LoginActivity.this, MainActivity.class));
     }

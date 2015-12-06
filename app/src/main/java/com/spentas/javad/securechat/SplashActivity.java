@@ -15,6 +15,7 @@ import com.spentas.javad.securechat.app.App;
 import com.spentas.javad.securechat.model.Message;
 import com.spentas.javad.securechat.model.User;
 import com.spentas.javad.securechat.network.websocket.ConnectionManager;
+import com.spentas.javad.securechat.sqlite.DbHelper;
 import com.spentas.javad.securechat.sqlite.SharedPreference;
 import com.spentas.javad.securechat.view.KenBurnsView;
 
@@ -24,9 +25,10 @@ import butterknife.Bind;
 import butterknife.ButterKnife;
 
 public class SplashActivity extends Activity {
-
     @Inject
-    ConnectionManager cm;
+    DbHelper db;
+//    @Inject
+//    ConnectionManager cm;
     private final int SPLASH_DISPLAY_LENGTH = 9000;
     @Inject
     SharedPreference sharedPreference;
@@ -44,7 +46,7 @@ public class SplashActivity extends Activity {
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
         ((App) getApplication()).getComponent().inject(this);
-
+        db.deleteAllFriends();
 
 
         mLoginStaus = sharedPreference.getLoginStatus();
