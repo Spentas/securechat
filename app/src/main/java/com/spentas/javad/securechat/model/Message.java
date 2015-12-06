@@ -1,5 +1,7 @@
 package com.spentas.javad.securechat.model;
 
+import java.security.PublicKey;
+
 /**
  *
  */
@@ -12,7 +14,7 @@ public class Message {
     private String flag;
     private String extra;
     private String message;
-    private String publicKey;
+    private PublicKey publicKey;
 
 
     private String type;
@@ -163,11 +165,11 @@ public class Message {
         return extra;
     }
 
-    public String getPublicKey() {
+    public PublicKey getPublicKey() {
         return publicKey;
     }
 
-    public void setPublicKey(String publicKey) {
+    public void setPublicKey(PublicKey publicKey) {
         this.publicKey = publicKey;
     }
 

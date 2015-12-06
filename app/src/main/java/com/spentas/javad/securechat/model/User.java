@@ -9,7 +9,7 @@ import java.security.PublicKey;
 public class User  {
     private String image;
     private String username;
-    private String publicKey;
+    private PublicKey publicKey;
     private PrivateKey privateKey;
     @Override
     public String toString() {
@@ -18,7 +18,7 @@ public class User  {
 
 
 
-    public User(String image, String username, String publickey, PrivateKey privateKey) {
+    public User(String image, String username, PublicKey publickey, PrivateKey privateKey) {
         this.image = image;
         this.username = username;
         this.publicKey = publickey;
@@ -37,11 +37,11 @@ public class User  {
         this.username = username;
     }
     
-    public String getPublicKey() {
+    public PublicKey getPublicKey() {
         return publicKey;
     }
 
-    public void setPublicKey(String publicKey) {
+    public void setPublicKey(PublicKey publicKey) {
         this.publicKey = publicKey;
     }
 

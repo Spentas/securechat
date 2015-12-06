@@ -119,7 +119,8 @@ public class DbHelper extends SQLiteOpenHelper {
 
                 cv.put(COLUMN_NAME, users.get(i).getUsername());
                 cv.put(COLUMN_AVATAR, users.get(i).getImage());
-                cv.put(COLUMN_USER_PUBLIC_KEY, users.get(i).getPublicKey());
+                cv.put(COLUMN_USER_PUBLIC_KEY, Util.encodeToBase64(users.get(i).getPublicKey().getEncoded()));
+                cv.put(COLUMN_USER_PRIVATE_KEY, Util.encodeToBase64(users.get(i).getPrivateKey().getEncoded()));
                 long r = db.insert(TABLE_FRIENDS, null, cv);
                 // SLog.e("INSERTING USERS", r + "");
 
@@ -145,7 +146,7 @@ public class DbHelper extends SQLiteOpenHelper {
             ContentValues cv = new ContentValues();
             cv.put(COLUMN_NAME, user.getUsername());
             cv.put(COLUMN_AVATAR, user.getImage());
-            cv.put(COLUMN_USER_PUBLIC_KEY,user.getPublicKey());
+            cv.put(COLUMN_USER_PUBLIC_KEY,Util.encodeToBase64(user.getPublicKey().getEncoded()));
 
              db.insert(TABLE_FRIENDS, null, cv);
 
@@ -162,7 +163,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
             ContentValues cv = new ContentValues();
             cv.put(COLUMN_NAME, user.getUsername());
-            cv.put(COLUMN_USER_PUBLIC_KEY,user.getPublicKey());
+            cv.put(COLUMN_USER_PUBLIC_KEY, Util.encodeToBase64(user.getPublicKey().getEncoded()));
             cv.put(COLUMN_SYMMETRIC_KEY, key);
 
             db.insert(TABLE_FRIENDS, null, cv);
@@ -291,14 +292,14 @@ public class DbHelper extends SQLiteOpenHelper {
         return history;
     }
 
-    public boolean addUsers(User user) {
+    public boolean addUser(User user) {
        boolean isStored = false;
         db = getWritableDatabase();
         try {
             ContentValues cv = new ContentValues();
             cv.put(COLUMN_USER_NAME, user.getUsername());
-            cv.put(COLUMN_USER_PUBLIC_KEY, user.getPublicKey());
-            cv.put(COLUMN_USER_PRIVATE_KEY, Util.encodePrivateKey(user.getPrivateKey()));
+            cv.put(COLUMN_USER_PUBLIC_KEY, Util.encodeToBase64(user.getPublicKey().getEncoded()));
+            cv.put(COLUMN_USER_PRIVATE_KEY, Util.encodeToBase64(user.getPrivateKey().getEncoded()));
             long r = db.insert(TABLE_USER, null, cv);
             isStored = true;
         } catch (Exception e) {

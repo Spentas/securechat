@@ -6,8 +6,10 @@ import android.util.Base64;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
+import java.security.NoSuchAlgorithmException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.security.PrivateKey;
@@ -37,9 +39,22 @@ public class Util {
     }
 
     public static byte[] decodeFromBase64(String cypheredText){
-        return Base64.decode(cypheredText,Base64.DEFAULT);
+        return Base64.decode(cypheredText, Base64.DEFAULT);
     }
 
+
+   public static PublicKey decodeFromBtyes(byte[] key){
+       try {
+           PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(key));
+           return publicKey;
+
+       } catch (InvalidKeySpecException e) {
+           e.printStackTrace();
+       } catch (NoSuchAlgorithmException e) {
+           e.printStackTrace();
+       }
+       return null;
+   }
 
 //    public static void writePublicKeyToPreferences(KeyPair key) {
 //        StringWriter publicStringWriter = new StringWriter();

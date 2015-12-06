@@ -8,6 +8,7 @@ import android.util.Log;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.spentas.javad.securechat.app.App;
+import com.spentas.javad.securechat.crypto.Util;
 import com.spentas.javad.securechat.model.Message;
 import com.spentas.javad.securechat.model.User;
 import com.spentas.javad.securechat.network.websocket.Connection;
@@ -22,6 +23,8 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Produce;
 
 import org.json.JSONObject;
+
+import java.security.PublicKey;
 
 import javax.inject.Inject;
 

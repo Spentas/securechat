@@ -74,9 +74,9 @@ public class RegistrationActivity extends AppCompatActivity implements Callback 
     public void httpCallback(JSONObject object) {
         mUser = new User();
         mUser.setUsername(mUsername.getText().toString());
-        mUser.setPublicKey(Util.encodePublicKey(mKeyPair.getPublic()));
+        mUser.setPublicKey(mKeyPair.getPublic());
         mUser.setPrivateKey(mKeyPair.getPrivate());
-        mDb.addUsers(mUser);
+        mDb.addUser(mUser);
         mshSharedPreference.storeLoginStatus(true);
         mshSharedPreference.storeUserInfo(mUsername.getText().toString(),"***");
         startActivity(new Intent(RegistrationActivity.this, MainActivity.class));
