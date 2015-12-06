@@ -17,16 +17,21 @@ import com.loopj.android.http.RequestParams;
 import com.spentas.javad.securechat.R;
 import com.spentas.javad.securechat.adapter.SearchListAdapter;
 import com.spentas.javad.securechat.app.App;
+import com.spentas.javad.securechat.crypto.RSAEngine;
+import com.spentas.javad.securechat.crypto.Util;
 import com.spentas.javad.securechat.model.User;
 import com.spentas.javad.securechat.network.webservice.RestfulRequest;
 import com.spentas.javad.securechat.sqlite.DbHelper;
 import com.spentas.javad.securechat.utils.Callback;
+import com.spentas.javad.securechat.utils.Const;
 import com.spentas.javad.securechat.utils.DividerItemDecoration;
 import com.spentas.javad.securechat.utils.Utils;
 import com.squareup.otto.Bus;
 
 import org.json.JSONObject;
 
+import java.security.PrivateKey;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -90,10 +95,27 @@ public class FindFriendFragment extends Fragment implements Callback {
 
     @OnClick(R.id.search_go)
     public void findFriends() {
-        params = new RequestParams();
-        params.put("username", mSearchBox.getText().toString());
-        params.put("token", "pass");
-        RestfulRequest.sendRequest(params, this, RestfulRequest.RequestType.FINDFRIEND);
+//        params = new RequestParams();
+//        params.put("username", mSearchBox.getText().toString());
+//        params.put("token", "pass");
+//        RestfulRequest.sendRequest(params, this, RestfulRequest.RequestType.FINDFRIEND);
+
+        mDb.getRsaKey(Const.PUBLIC_KEY);
+        mDb.getRsaKey(Const.PRIVATE_KEY);
+        try {
+            PublicKey  pbk = Util.decodeRSAPublicKeyFromString(mDb.getRsaKey(Const.PUBLIC_KEY));
+            PrivateKey prk = Util.decodeRSAPrivateKeyFromString(mDb.getRsaKey(Const.PRIVATE_KEY));
+            String d= RSAEngine.encrypt(pbk, mSearchBox.getText().toString());
+            System.out.println(d +"   encrypted");
+            System.out.println(RSAEngine.decryptFromBase64(prk, d) + "   decrypted");
+
+
+        } catch (Exception e) {
+            System.out.println("Error in key extraction");
+            e.printStackTrace();
+        }
+
+
     }
 
     @Override

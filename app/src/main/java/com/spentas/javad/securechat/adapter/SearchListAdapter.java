@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import com.spentas.javad.securechat.R;
 import com.spentas.javad.securechat.app.App;
+import com.spentas.javad.securechat.crypto.Util;
 import com.spentas.javad.securechat.model.Message;
 import com.spentas.javad.securechat.model.User;
 import com.spentas.javad.securechat.network.websocket.ConnectionManager;
@@ -173,7 +174,11 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
             msg.setFrom(mSh.getUserInfo().get("username"));
             msg.setFlag("skey");
             msg.setMessage("aes");
-            msg.setPublicKey(mDb.getRsaKey("pbk"));
+            try {
+                msg.setPublicKey(Util.decodeRSAPublicKeyFromString(mDb.getRsaKey("pbk")));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
             ConnectionManager.getConnection(ConnectionManager.ConnectionType.WEBSOCKET).sendMessageToServer(msg);
         }
     }

@@ -7,19 +7,24 @@ import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
 import java.security.NoSuchAlgorithmException;
+import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.security.Security;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
 import java.security.PrivateKey;
 import java.security.PublicKey;
+import java.util.Arrays;
 
 /**
  * Created by javad on 11/24/2015.
  */
 public class Util {
-
+    static {
+        Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
+    }
     public static String encodePublicKey(PublicKey pbk) {
         byte[] base64Encoded = Base64.encode(pbk.getEncoded(), Base64.DEFAULT);
         String encoded = new String(base64Encoded);
@@ -35,6 +40,7 @@ public class Util {
     }
 
     public static String encodeToBase64(byte[] cyphredBytes) {
+
         return Base64.encodeToString(cyphredBytes, Base64.DEFAULT);
     }
 
@@ -43,14 +49,16 @@ public class Util {
     }
 
 
-   public static PublicKey decodeFromBtyes(byte[] key){
+   public static PublicKey decodeRSAPublicFromBtyes(byte[] key){
        try {
-           PublicKey publicKey = KeyFactory.getInstance("RSA").generatePublic(new X509EncodedKeySpec(key));
+           PublicKey publicKey = KeyFactory.getInstance("RSAEngine","SC").generatePublic(new X509EncodedKeySpec(key));
            return publicKey;
 
        } catch (InvalidKeySpecException e) {
            e.printStackTrace();
        } catch (NoSuchAlgorithmException e) {
+           e.printStackTrace();
+       } catch (NoSuchProviderException e) {
            e.printStackTrace();
        }
        return null;
@@ -65,7 +73,7 @@ public class Util {
 //            pemWriter.close();
 //            Preferences.putString(Preferences.RSA_PUBLIC_KEY, publicStringWriter.toString());
 //        } catch (IOException e) {
-//            Log.e("RSA", e.getMessage());
+//            Log.e("RSAEngine", e.getMessage());
 //            e.printStackTrace();
 //        }
 //    }
@@ -79,28 +87,29 @@ public class Util {
 //            pemWriter.close();
 //            Preferences.putString(Preferences.RSA_PRIVATE_KEY, privateStringWriter.toString());
 //        } catch (IOException e) {
-//            Log.e("RSA", e.getMessage());
+//            Log.e("RSAEngine", e.getMessage());
 //            e.printStackTrace();
 //        }
 //    }
 
-    public static PublicKey getRSAPublicKeyFromString(String publicKeyPEM) throws Exception {
+    public static PublicKey decodeRSAPublicKeyFromString(String publicKeyPEM) throws Exception {
         publicKeyPEM = publicKeyPEM.trim();
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA", "SC");
+        KeyFactory keyFactory = KeyFactory.getInstance("RSAEngine", "SC");
         byte[] publicKeyBytes = org.spongycastle.util.encoders.Base64.decode(publicKeyPEM.getBytes("UTF-8"));
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(publicKeyBytes);
         return keyFactory.generatePublic(x509KeySpec);
     }
-//
-//    public static PrivateKey getRSAPrivateKeyFromString(String privateKeyPEM) throws Exception {
-//        privateKeyPEM = stripPrivateKeyHeaders(privateKeyPEM);
-//        KeyFactory fact = KeyFactory.getInstance("RSA", "SC");
-//        byte[] clear = Base64.decode(privateKeyPEM);
-//        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(clear);
-//        PrivateKey priv = fact.generatePrivate(keySpec);
-//        Arrays.fill(clear, (byte) 0);
-//        return priv;
-//    }
+
+    public static PrivateKey decodeRSAPrivateKeyFromString(String privateKeyPEM) throws Exception {
+
+       // privateKeyPEM = privateKeyPEM.trim();
+        KeyFactory fact = KeyFactory.getInstance("RSAEngine", "SC");
+        byte[] clear = Base64.decode(privateKeyPEM, Base64.DEFAULT);
+        PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(clear);
+        PrivateKey priv = fact.generatePrivate(keySpec);
+        Arrays.fill(clear, (byte) 0);
+        return priv;
+    }
 
     public static String stripPublicKeyHeaders(String key) {
         //strip the headers from the key string

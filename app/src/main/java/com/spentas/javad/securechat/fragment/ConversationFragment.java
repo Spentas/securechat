@@ -75,7 +75,6 @@ public class ConversationFragment extends Activity implements View.OnClickListen
         ((App) getApplication()).getComponent().inject(this);
         buddy = getIntent().getStringExtra("username");
         me = sh.getUserInfo().get("username");
-
         convList = mDb.getChatHistoryById(String.format("%s:%s", me, buddy));
         Log.i("conv", String.valueOf(convList.size()));
         ListView list = (ListView) findViewById(R.id.conversation_list);

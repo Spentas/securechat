@@ -14,7 +14,7 @@ import android.widget.Toast;
 
 import com.loopj.android.http.RequestParams;
 import com.spentas.javad.securechat.app.App;
-import com.spentas.javad.securechat.crypto.RSA;
+import com.spentas.javad.securechat.crypto.RSAEngine;
 import com.spentas.javad.securechat.crypto.Util;
 import com.spentas.javad.securechat.model.User;
 import com.spentas.javad.securechat.network.NetworkConfig;
@@ -102,7 +102,7 @@ public class RegistrationActivity extends AppCompatActivity implements Callback 
             @Override
             protected Void doInBackground(Void... params) {
                 final long timeStarted = System.currentTimeMillis();
-                mKeyPair = RSA.generate();
+                mKeyPair = RSAEngine.generate();
                 System.out.println(Util.encodePrivateKey(mKeyPair.getPrivate()));
                 System.out.println("=======================");
                 System.out.println(Util.encodePublicKey(mKeyPair.getPublic()));
@@ -110,6 +110,7 @@ public class RegistrationActivity extends AppCompatActivity implements Callback 
                 System.out.println(mKeyPair);
                 System.out.println("=============pri en==========");
                 System.out.println(mKeyPair.getPrivate());
+
                 return null;
             }
 

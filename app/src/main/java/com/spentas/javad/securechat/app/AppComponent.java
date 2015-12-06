@@ -6,6 +6,7 @@ import com.spentas.javad.securechat.RegistrationActivity;
 import com.spentas.javad.securechat.SplashActivity;
 import com.spentas.javad.securechat.adapter.FriendListAdapter;
 import com.spentas.javad.securechat.adapter.SearchListAdapter;
+import com.spentas.javad.securechat.crypto.CryptoEnginFactory;
 import com.spentas.javad.securechat.fragment.ConversationFragment;
 import com.spentas.javad.securechat.fragment.FindFriendFragment;
 import com.spentas.javad.securechat.fragment.FriendListFragment;
@@ -40,4 +41,5 @@ public interface AppComponent {
     void inject(WsService wsService);
     void inject(ConnectionReceiver connectionReceiver);
     void inject (RegistrationActivity registrationActivity);
+    void inject (CryptoEnginFactory cryptoEnginFactory);
 }

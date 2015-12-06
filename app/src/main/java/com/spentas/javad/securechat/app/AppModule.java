@@ -5,6 +5,7 @@ import android.content.Context;
 
 import com.spentas.javad.securechat.LoginActivity;
 import com.spentas.javad.securechat.MainActivity;
+import com.spentas.javad.securechat.crypto.CryptoEnginFactory;
 import com.spentas.javad.securechat.network.websocket.Connection;
 import com.spentas.javad.securechat.network.websocket.ConnectionManager;
 import com.spentas.javad.securechat.network.websocket.WsConnection;
@@ -59,6 +60,8 @@ public class AppModule {
         return new DbHelper(ctx);
     }
 
+    @Provides
+    CryptoEnginFactory provideCryptoEnginFactory(){return new CryptoEnginFactory();}
 //    @Provides
 //    ConnectionManager provideConnectionManager(){return new ConnectionManager();}
 

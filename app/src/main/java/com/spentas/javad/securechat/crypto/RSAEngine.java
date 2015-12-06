@@ -3,37 +3,38 @@ package com.spentas.javad.securechat.crypto;
 import android.util.Base64;
 import android.util.Log;
 
+import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.security.PrivateKey;
-import java.security.PublicKey;
+import java.security.NoSuchProviderException;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.security.spec.RSAKeyGenParameterSpec;
 
+import javax.crypto.BadPaddingException;
 import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
 
 /**
  * Created by javad on 11/24/2015.
  */
-public class RSA {
+public class RSAEngine {
+    private static final String TAG = RSAEngine.class.getSimpleName();
+    private static final int KEY_SIZE = 1024;
+
     static {
         Security.insertProviderAt(new org.spongycastle.jce.provider.BouncyCastleProvider(), 1);
     }
-
-    private static final String TAG = RSA.class.getSimpleName();
-
-    private static final int KEY_SIZE = 1024;
-
 
     public static KeyPair generate() {
         try {
             SecureRandom random = new SecureRandom();
             RSAKeyGenParameterSpec spec = new RSAKeyGenParameterSpec(KEY_SIZE, RSAKeyGenParameterSpec.F4);
-            KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA", "SC");
+            KeyPairGenerator generator = KeyPairGenerator.getInstance("RSAEngine", "SC");
             generator.initialize(spec, random);
             return generator.generateKeyPair();
         } catch (Exception e) {
@@ -42,9 +43,35 @@ public class RSA {
     }
 
 
+    public static String encrypt(Key publicKey, String plainText) {
+
+
+        try {
+            byte[] cypherByte = plainText.getBytes();
+            Cipher cipher = Cipher.getInstance("RSAEngine/ECB/OAEPWithSHA1AndMGF1Padding", "SC");
+            cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+            cypherByte = cipher.doFinal(cypherByte);
+            return Util.encodeToBase64(cypherByte);
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (NoSuchPaddingException e) {
+            e.printStackTrace();
+        } catch (InvalidKeyException e) {
+            e.printStackTrace();
+        } catch (BadPaddingException e) {
+            e.printStackTrace();
+        } catch (IllegalBlockSizeException e) {
+            e.printStackTrace();
+        }
+        return null;
+
+    }
+
     public static byte[] encrypt(Key publicKey, byte[] toBeCiphred) {
         try {
-            Cipher rsaCipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding", "SC");
+            Cipher rsaCipher = Cipher.getInstance("RSAEngine/ECB/OAEPWithSHA1AndMGF1Padding", "SC");
             rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey);
             return rsaCipher.doFinal(toBeCiphred);
         } catch (Exception e) {
@@ -54,10 +81,9 @@ public class RSA {
     }
 
 
-
     public static byte[] decrypt(Key privateKey, byte[] encryptedText) {
         try {
-            Cipher rsaCipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding", "SC");
+            Cipher rsaCipher = Cipher.getInstance("RSAEngine/ECB/OAEPWithSHA1AndMGF1Padding", "SC");
             rsaCipher.init(Cipher.DECRYPT_MODE, privateKey);
             return rsaCipher.doFinal(encryptedText);
         } catch (Exception e) {
@@ -66,8 +92,8 @@ public class RSA {
         }
     }
 
-    public static String decryptFromBase64(Key key, String cyphredText) {
-        byte[] afterDecrypting = RSA.decrypt(key, Base64.decode(cyphredText, Base64.DEFAULT));
+    public static String decryptFromBase64(Key privateKey, String cyphredText) {
+        byte[] afterDecrypting = RSAEngine.decrypt(privateKey, Base64.decode(cyphredText, Base64.DEFAULT));
         return stringify(afterDecrypting);
     }
 
@@ -94,6 +120,18 @@ public class RSA {
 //            throw new RuntimeException(e);
 //        }
 //    }
+
+    public static String stringify(byte[] bytes) {
+        return stringify(new String(bytes));
+    }
+
+    private static String stringify(String str) {
+        String aux = "";
+        for (int i = 0; i < str.length(); i++) {
+            aux += str.charAt(i);
+        }
+        return aux;
+    }
 
     private static class FixedRand extends SecureRandom {
 
@@ -129,18 +167,5 @@ public class RSA {
                 sha.update(state);
             }
         }
-    }
-
-
-    public static String stringify(byte[] bytes) {
-        return stringify(new String(bytes));
-    }
-
-    private static String stringify(String str) {
-        String aux = "";
-        for (int i = 0; i < str.length(); i++) {
-            aux += str.charAt(i);
-        }
-        return aux;
     }
 }
