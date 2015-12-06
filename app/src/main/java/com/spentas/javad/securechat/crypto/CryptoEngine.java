@@ -15,12 +15,12 @@ public interface CryptoEngine {
      * @param plainText
      * @return
      */
-    public String encrypt(String plainText);
+    public String encrypt(String plainText,Key secretKey);
 
     /**
      * @param cypherText
      * @return
      */
-    public String decrypt(String cypherText);
+    public String decrypt(String cypherText,Key secretKey);
 
 }

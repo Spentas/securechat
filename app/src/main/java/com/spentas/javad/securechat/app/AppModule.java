@@ -1,13 +1,8 @@
 package com.spentas.javad.securechat.app;
 
 import android.app.Application;
-import android.content.Context;
 
-import com.spentas.javad.securechat.LoginActivity;
-import com.spentas.javad.securechat.MainActivity;
-import com.spentas.javad.securechat.crypto.CryptoEnginFactory;
-import com.spentas.javad.securechat.network.websocket.Connection;
-import com.spentas.javad.securechat.network.websocket.ConnectionManager;
+import com.spentas.javad.securechat.crypto.CryptoEngineFactory;
 import com.spentas.javad.securechat.network.websocket.WsConnection;
 import com.spentas.javad.securechat.sqlite.DbHelper;
 import com.spentas.javad.securechat.sqlite.SharedPreference;
@@ -61,7 +56,7 @@ public class AppModule {
     }
 
     @Provides
-    CryptoEnginFactory provideCryptoEnginFactory(){return new CryptoEnginFactory();}
+    CryptoEngineFactory provideCryptoEnginFactory(){return new CryptoEngineFactory();}
 //    @Provides
 //    ConnectionManager provideConnectionManager(){return new ConnectionManager();}
 
