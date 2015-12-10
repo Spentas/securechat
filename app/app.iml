@@ -111,8 +111,8 @@
     <orderEntry type="library" exported="" name="httpmime-4.5.1" level="project" />
     <orderEntry type="library" exported="" name="httpclient-4.3.6" level="project" />
     <orderEntry type="library" exported="" name="pg-1.51.0.0" level="project" />
-    <orderEntry type="library" exported="" name="javax.inject-1" level="project" />
     <orderEntry type="library" exported="" name="jackson-databind-2.4.1" level="project" />
+    <orderEntry type="library" exported="" name="javax.inject-1" level="project" />
     <orderEntry type="library" exported="" name="core-1.51.0.0" level="project" />
     <orderEntry type="library" exported="" name="prov-1.51.0.0" level="project" />
     <orderEntry type="library" exported="" name="support-v4-23.1.0" level="project" />

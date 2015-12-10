@@ -13,8 +13,12 @@ import com.spentas.javad.securechat.model.Conversation;
 import com.spentas.javad.securechat.model.Message;
 import com.spentas.javad.securechat.model.User;
 
+import java.security.Key;
+import java.security.PublicKey;
 import java.util.ArrayList;
 import java.util.List;
+
+import javax.crypto.spec.SecretKeySpec;
 
 /**
  * Created by javad on 11/14/2015.
@@ -158,6 +162,7 @@ public class DbHelper extends SQLiteOpenHelper {
 
     }
     public void addFriend(User user,String key) {
+
         db = getWritableDatabase();
         try {
 
@@ -165,7 +170,6 @@ public class DbHelper extends SQLiteOpenHelper {
             cv.put(COLUMN_NAME, user.getUsername());
             cv.put(COLUMN_USER_PUBLIC_KEY, Util.encodeToBase64(user.getPublicKey().getEncoded()));
             cv.put(COLUMN_SYMMETRIC_KEY, key);
-
             db.insert(TABLE_FRIENDS, null, cv);
             Log.i("db", "new friend added");
         } catch (Exception e) {
@@ -182,7 +186,7 @@ public class DbHelper extends SQLiteOpenHelper {
         try {
             Cursor c = db.query(TABLE_FRIENDS, new String[]{COLUMN_USER_ID,
                             COLUMN_NAME, COLUMN_JID, COLUMN_AVATAR, COLUMN_LAST,
-                            COLUMN_LAST_MSG, COLUMN_UNREAD,COLUMN_USER_PUBLIC_KEY}, null, null, null, null,
+                            COLUMN_LAST_MSG, COLUMN_UNREAD,COLUMN_USER_PUBLIC_KEY,COLUMN_SYMMETRIC_KEY}, null, null, null, null,
                     null);
             int numRows = c.getCount();
             // SLog.e("ROWS COUNT DB USERS", numRows + "");
@@ -191,6 +195,7 @@ public class DbHelper extends SQLiteOpenHelper {
                 User row = new User();
                 row.setUsername(c.getString(1));
                 row.setImage(c.getString(3));
+                row.setSecretKey(new SecretKeySpec( Util.decodeFromBase64( c.getString(8)),"AES"));
                 ret.add(row);
                 c.moveToNext();
             }
@@ -318,5 +323,22 @@ public class DbHelper extends SQLiteOpenHelper {
         }catch (Exception e){
             e.printStackTrace();
         }
+    }
+
+    public PublicKey getFriendPublicKey(String username){
+        String encodedKey="";
+        PublicKey pbk = null;
+        try {
+            db = this.getWritableDatabase();
+            String query = "SELECT * from " + TABLE_FRIENDS + " WHERE "+ COLUMN_NAME + "="+username+";";
+            Cursor c = db.rawQuery(query, null);
+            c.moveToFirst();
+            encodedKey = c.getString(c.getColumnIndex(COLUMN_USER_PUBLIC_KEY));
+            c.close();
+           pbk = Util.decodeRSAPublicKeyFromString(encodedKey);
+
+        }catch(Exception e){}
+
+        return pbk;
     }
 }

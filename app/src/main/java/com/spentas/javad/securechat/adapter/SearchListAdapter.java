@@ -11,18 +11,24 @@ import android.widget.TextView;
 
 import com.spentas.javad.securechat.R;
 import com.spentas.javad.securechat.app.App;
+import com.spentas.javad.securechat.crypto.CryptoEngineFactory;
+import com.spentas.javad.securechat.crypto.KeyType;
+import com.spentas.javad.securechat.crypto.RSAEngine;
 import com.spentas.javad.securechat.crypto.Util;
 import com.spentas.javad.securechat.model.Message;
 import com.spentas.javad.securechat.model.User;
 import com.spentas.javad.securechat.network.websocket.ConnectionManager;
 import com.spentas.javad.securechat.sqlite.DbHelper;
 import com.spentas.javad.securechat.sqlite.SharedPreference;
+import com.spentas.javad.securechat.utils.Const;
 import com.spentas.javad.securechat.utils.MainThreadBus;
 import com.spentas.javad.securechat.utils.event.DataSetChangeEvent;
 import com.spentas.javad.securechat.view.cpb.CircularProgressButton;
 import com.squareup.otto.Bus;
 import com.squareup.otto.Produce;
 
+import java.security.Key;
+import java.security.PublicKey;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -35,6 +41,8 @@ import butterknife.Bind;
 public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.ViewHolder> {
 
     private final Object mLock = new Object();
+    @Inject
+    CryptoEngineFactory crypto;
     @Inject
     Bus bus;
     @Inject
@@ -154,7 +162,6 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
             username = (TextView) itemView.findViewById(R.id.friendlist_username);
             button = (CircularProgressButton) itemView.findViewById(R.id.send_frireq_btn);
             button.setOnClickListener(this);
-
         }
 
         @Produce
@@ -173,9 +180,13 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
             msg.setTo(mUsers.get(position).getUsername());
             msg.setFrom(mSh.getUserInfo().get("username"));
             msg.setFlag("skey");
-            msg.setMessage("aes");
+            Key key = crypto.getEngine(KeyType.AES128).keyGenerator();
+            byte[] keyBytes= key.getEncoded();
             try {
-                msg.setPublicKey(Util.decodeRSAPublicKeyFromString(mDb.getRsaKey("pbk")));
+                String secretKey = crypto.getEngine(KeyType.RSA).encrypt(new String(keyBytes),user.getPublicKey());
+
+                msg.setMessage(secretKey);
+                msg.setPublicKey(Util.decodeRSAPublicKeyFromString(mDb.getRsaKey(Const.PUBLIC_KEY)));
             } catch (Exception e) {
                 e.printStackTrace();
             }

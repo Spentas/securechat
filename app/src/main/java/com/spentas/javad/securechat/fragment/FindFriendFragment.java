@@ -97,19 +97,10 @@ public class FindFriendFragment extends Fragment implements Callback {
 
     @OnClick(R.id.search_go)
     public void findFriends() {
-//        params = new RequestParams();
-//        params.put("username", mSearchBox.getText().toString());
-//        params.put("token", "pass");
-//        RestfulRequest.sendRequest(params, this, RestfulRequest.RequestType.FINDFRIEND);
-
-      CryptoEngine  crypto= cryptoEngineFactory.getEngine(KeyType.AES256);
-        Key key = crypto.keyGenerator();
-        System.out.println("AES key: " + Util.encodeToBase64(key.getEncoded()));
-        String test = mSearchBox.getText().toString();
-        String crypted = crypto.encrypt(test,key);
-        System.out.println("Encrypte :" + crypted);
-        System.out.println("decrypted :" + crypto.decrypt(crypted,key));
-
+        params = new RequestParams();
+        params.put("username", mSearchBox.getText().toString());
+        params.put("token", "pass");
+        RestfulRequest.sendRequest(params, this, RestfulRequest.RequestType.FINDFRIEND);
 
     }
 

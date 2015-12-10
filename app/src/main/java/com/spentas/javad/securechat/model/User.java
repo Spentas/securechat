@@ -1,5 +1,6 @@
 package com.spentas.javad.securechat.model;
 
+import java.security.Key;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 
@@ -11,6 +12,16 @@ public class User  {
     private String username;
     private PublicKey publicKey;
     private PrivateKey privateKey;
+
+    public Key getSecretKey() {
+        return secretKey;
+    }
+
+    public void setSecretKey(Key secretKey) {
+        this.secretKey = secretKey;
+    }
+
+    private Key secretKey;
     @Override
     public String toString() {
         return "User [username=" + username + ", publicKey=" + publicKey +", image"+image+ "]";

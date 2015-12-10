@@ -10,6 +10,7 @@ import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.Security;
 import java.security.spec.RSAKeyGenParameterSpec;
@@ -22,7 +23,7 @@ import javax.crypto.NoSuchPaddingException;
 /**
  * Created by javad on 11/24/2015.
  */
-public class RSAEngine {
+public class RSAEngine implements CryptoEngine {
     private static final String TAG = RSAEngine.class.getSimpleName();
     private static final int KEY_SIZE = 1024;
 
@@ -34,7 +35,7 @@ public class RSAEngine {
         try {
             SecureRandom random = new SecureRandom();
             RSAKeyGenParameterSpec spec = new RSAKeyGenParameterSpec(KEY_SIZE, RSAKeyGenParameterSpec.F4);
-            KeyPairGenerator generator = KeyPairGenerator.getInstance("RSAEngine", "SC");
+            KeyPairGenerator generator = KeyPairGenerator.getInstance("RSA", "SC");
             generator.initialize(spec, random);
             return generator.generateKeyPair();
         } catch (Exception e) {
@@ -42,13 +43,13 @@ public class RSAEngine {
         }
     }
 
-
-    public static String encrypt(Key publicKey, String plainText) {
+    @Override
+    public  String encrypt( String plainText,Key publicKey) {
 
 
         try {
             byte[] cypherByte = plainText.getBytes();
-            Cipher cipher = Cipher.getInstance("RSAEngine/ECB/OAEPWithSHA1AndMGF1Padding", "SC");
+            Cipher cipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding", "SC");
             cipher.init(Cipher.ENCRYPT_MODE, publicKey);
             cypherByte = cipher.doFinal(cypherByte);
             return Util.encodeToBase64(cypherByte);
@@ -71,7 +72,7 @@ public class RSAEngine {
 
     public static byte[] encrypt(Key publicKey, byte[] toBeCiphred) {
         try {
-            Cipher rsaCipher = Cipher.getInstance("RSAEngine/ECB/OAEPWithSHA1AndMGF1Padding", "SC");
+            Cipher rsaCipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding", "SC");
             rsaCipher.init(Cipher.ENCRYPT_MODE, publicKey);
             return rsaCipher.doFinal(toBeCiphred);
         } catch (Exception e) {
@@ -83,7 +84,7 @@ public class RSAEngine {
 
     public static byte[] decrypt(Key privateKey, byte[] encryptedText) {
         try {
-            Cipher rsaCipher = Cipher.getInstance("RSAEngine/ECB/OAEPWithSHA1AndMGF1Padding", "SC");
+            Cipher rsaCipher = Cipher.getInstance("RSA/ECB/OAEPWithSHA1AndMGF1Padding", "SC");
             rsaCipher.init(Cipher.DECRYPT_MODE, privateKey);
             return rsaCipher.doFinal(encryptedText);
         } catch (Exception e) {
@@ -91,8 +92,8 @@ public class RSAEngine {
             throw new RuntimeException(e);
         }
     }
-
-    public static String decryptFromBase64(Key privateKey, String cyphredText) {
+    @Override
+    public  String decrypt( String cyphredText,Key privateKey) {
         byte[] afterDecrypting = RSAEngine.decrypt(privateKey, Base64.decode(cyphredText, Base64.DEFAULT));
         return stringify(afterDecrypting);
     }
@@ -105,7 +106,7 @@ public class RSAEngine {
 //            throw new RuntimeException(e);
 //        }
 //    }
-
+//
 //    public static String encryptWithStoredKey(String text) {
 //        String strippedKey = Crypto.stripPublicKeyHeaders(Preferences.getString(Preferences.RSA_PUBLIC_KEY));
 //        return encryptWithKey(strippedKey, text);
@@ -132,6 +133,15 @@ public class RSAEngine {
         }
         return aux;
     }
+
+    @Override
+    public Key keyGenerator() {
+        return null;
+    }
+
+
+
+
 
     private static class FixedRand extends SecureRandom {
 

@@ -131,7 +131,7 @@ public class RegistrationActivity extends AppCompatActivity implements Callback 
                 if (Utils.isNotNull(username) && Utils.isNotNull(password) && mPasswordConfirmation.getText().toString().compareTo(mPassword.getText().toString()) == 0) {
                     if (!Utils.validate(username) && Utils.isPasswordValid(mPassword.getText().toString())) {
                         RequestParams params = new RequestParams();
-                        params.put(NetworkConfig.REST_PUBLIC_KEY_PARAM, Util.encodePublicKey(mKeyPair.getPublic()));
+                        params.put(NetworkConfig.REST_PUBLIC_KEY_PARAM, Util.encodeToBase64(mKeyPair.getPublic().getEncoded()));
                         params.put(NetworkConfig.REST_PASSWORD_PARAM, password);
                         params.put(NetworkConfig.REST_USERNAME_PARAM, username);
                         RestfulRequest.register(params, RegistrationActivity.this);

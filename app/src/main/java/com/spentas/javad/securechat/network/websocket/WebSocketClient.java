@@ -36,7 +36,7 @@ public class WebSocketClient {
     private static final String TAG = "WebSocketClient";
 
     private URI mURI;
-    private Listener                 mListener;
+    private Listener mListener;
     private Socket mSocket;
     private Thread mThread;
     private HandlerThread mHandlerThread;

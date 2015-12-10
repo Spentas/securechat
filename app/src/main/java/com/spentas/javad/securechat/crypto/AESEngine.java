@@ -12,6 +12,7 @@ import java.security.InvalidKeyException;
 import java.security.Key;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
+import java.security.PublicKey;
 import java.security.Security;
 import java.util.HashMap;
 
@@ -34,9 +35,6 @@ public class AESEngine implements CryptoEngine {
     private static byte[] ivBytes = new byte[]{
             0x00, 0x00, 0x00, 0x01, 0x04, 0x05, 0x06, 0x07,
             0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x01};
-    private HashMap<String, String> result;
-    private static final String EN_TXT_TAG = "encrypteddata";
-    private static final String DE_TXT_TAG = "decrypteddata";
     IvParameterSpec ivParameterSpec;
 
     static {
@@ -70,7 +68,6 @@ public class AESEngine implements CryptoEngine {
         }
         keyGenerator.init(keySize);
         Key secretKey = keyGenerator.generateKey();
-
         return secretKey;
     }
 
