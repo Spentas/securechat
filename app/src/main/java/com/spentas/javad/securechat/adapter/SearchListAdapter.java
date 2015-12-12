@@ -13,7 +13,6 @@ import com.spentas.javad.securechat.R;
 import com.spentas.javad.securechat.app.App;
 import com.spentas.javad.securechat.crypto.CryptoEngineFactory;
 import com.spentas.javad.securechat.crypto.KeyType;
-import com.spentas.javad.securechat.crypto.RSAEngine;
 import com.spentas.javad.securechat.crypto.Util;
 import com.spentas.javad.securechat.model.Message;
 import com.spentas.javad.securechat.model.User;
@@ -28,7 +27,6 @@ import com.squareup.otto.Bus;
 import com.squareup.otto.Produce;
 
 import java.security.Key;
-import java.security.PublicKey;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -173,20 +171,21 @@ public class SearchListAdapter extends RecyclerView.Adapter<SearchListAdapter.Vi
         public void onClick(View v) {
             new ProgressBar((CircularProgressButton) v).execute(100);
             int position = getLayoutPosition();
+            Key key = crypto.getEngine(KeyType.AES128).keyGenerator();
             User user = mUsers.get(position);
+            user.setSecretKey(key);
             mDb.addFriend(user);
             mTbus.post(produceDataSetChangeEvent());
+
             Message msg = new Message();
             msg.setTo(mUsers.get(position).getUsername());
             msg.setFrom(mSh.getUserInfo().get("username"));
             msg.setFlag("skey");
-            Key key = crypto.getEngine(KeyType.AES128).keyGenerator();
-            byte[] keyBytes= key.getEncoded();
+            byte[] keyBytes = key.getEncoded();
             try {
-                String secretKey = crypto.getEngine(KeyType.RSA).encrypt(new String(keyBytes),user.getPublicKey());
-
+                String secretKey = crypto.getEngine(KeyType.RSA).encrypt(new String(keyBytes),Util.decodeRSAPublicKeyFromString(user.getPublicKeyPem()));
                 msg.setMessage(secretKey);
-                msg.setPublicKey(Util.decodeRSAPublicKeyFromString(mDb.getRsaKey(Const.PUBLIC_KEY)));
+                msg.setPublicKeyPem(mDb.getRsaKey(Const.PUBLIC_KEY));
             } catch (Exception e) {
                 e.printStackTrace();
             }

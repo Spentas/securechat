@@ -11,6 +11,7 @@ import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
 import java.security.PublicKey;
 import java.security.Security;
+import java.security.Signature;
 import java.security.spec.InvalidKeySpecException;
 import java.security.spec.PKCS8EncodedKeySpec;
 import java.security.spec.X509EncodedKeySpec;
@@ -51,7 +52,7 @@ public class Util {
 
    public static PublicKey decodeRSAPublicFromBtyes(byte[] key){
        try {
-           PublicKey publicKey = KeyFactory.getInstance("RSAEngine","SC").generatePublic(new X509EncodedKeySpec(key));
+           PublicKey publicKey = KeyFactory.getInstance("RSA","SC").generatePublic(new X509EncodedKeySpec(key));
            return publicKey;
 
        } catch (InvalidKeySpecException e) {
@@ -94,7 +95,7 @@ public class Util {
 
     public static PublicKey decodeRSAPublicKeyFromString(String publicKeyPEM) throws Exception {
         publicKeyPEM = publicKeyPEM.trim();
-        KeyFactory keyFactory = KeyFactory.getInstance("RSAEngine", "SC");
+        KeyFactory keyFactory = KeyFactory.getInstance("RSA", "SC");
         byte[] publicKeyBytes = org.spongycastle.util.encoders.Base64.decode(publicKeyPEM.getBytes("UTF-8"));
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(publicKeyBytes);
         return keyFactory.generatePublic(x509KeySpec);
@@ -103,7 +104,7 @@ public class Util {
     public static PrivateKey decodeRSAPrivateKeyFromString(String privateKeyPEM) throws Exception {
 
        // privateKeyPEM = privateKeyPEM.trim();
-        KeyFactory fact = KeyFactory.getInstance("RSAEngine", "SC");
+        KeyFactory fact = KeyFactory.getInstance("RSA", "SC");
         byte[] clear = Base64.decode(privateKeyPEM, Base64.DEFAULT);
         PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(clear);
         PrivateKey priv = fact.generatePrivate(keySpec);
@@ -138,5 +139,25 @@ public class Util {
         return str == null || str.isEmpty();
     }
 
+    public static String createSignature(PrivateKey privateKey, String message) {
+        String algorithm = "SHA512withRSA";
+        Signature signature = null;
+        String signedString = null;
+
+        try {
+            signature = Signature.getInstance(algorithm);
+            signature.initSign(privateKey);
+            signature.update(message.getBytes());
+
+            byte[] signatureByteArray = signature.sign();
+
+//            signedString = "-----BEGIN SIGNATURE-----"
+//                    + DatatypeConverter.printBase64Binary(signatureByteArray)
+//                    + "-----END SIGNATURE-----";
+        } catch(Exception e) {
+            e.printStackTrace();
+        }
+        return signedString;
+    }
 
 }

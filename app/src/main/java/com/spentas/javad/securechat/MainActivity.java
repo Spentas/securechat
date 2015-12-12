@@ -80,12 +80,10 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
         tabLayout.setupWithViewPager(viewPager);
         setupTabIcon(tabLayout);
         com.spentas.javad.securechat.utils.Log.i(String.valueOf(Utils.isConnected()));
-        //
-        // Log.i("info",connection.toString());
         viewPager.clearOnPageChangeListeners();
         viewPager.addOnPageChangeListener(new TabLayoutOnPageChangeListener(tabLayout));
         mFragmentManager = getSupportFragmentManager();
-        mConnection = ConnectionManager.getConnection(ConnectionManager.ConnectionType.WEBSOCKET);
+       // mConnection = ConnectionManager.getConnection(ConnectionManager.ConnectionType.WEBSOCKET);
         startService(new Intent(this, WsService.class));
     }
 
@@ -130,7 +128,7 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
     protected void onPause() {
       //  mConnection.disConnect();
         mBus.unregister(this);
-        Log.i(String.format("Connection status on pause: %b", mConnection.isConnected()));
+        //Log.i(String.format("Connection status on pause: %b", mConnection.isConnected()));
         super.onPause();
 
     }
@@ -138,8 +136,8 @@ public class MainActivity extends AppCompatActivity implements OnQueryTextListen
     @Override
     protected void onResume() {
         mBus.register(this);
-        mConnection.connect();
-        Log.i(String.format("Connection status on resume : %b", mConnection.isConnected()));
+        //mConnection.connect();
+        //Log.i(String.format("Connection status on resume : %b", mConnection.isConnected()));
         super.onResume();
 
     }

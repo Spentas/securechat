@@ -82,9 +82,9 @@ public class FriendListFragment extends Fragment {
     public void onDataSetChangeEvent(DataSetChangeEvent event){
         mFriends.clear();
         Log.i(TAG, "notified");
-       synchronized (mLock) {
+
            mFriends.addAll(mDb.fetchAllUsers());
-       }
+
         mFriendListAdapter.notifyDataSetChanged();
     }
 

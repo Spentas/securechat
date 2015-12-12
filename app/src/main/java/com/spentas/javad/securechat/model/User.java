@@ -12,6 +12,15 @@ public class User  {
     private String username;
     private PublicKey publicKey;
     private PrivateKey privateKey;
+    private String publicKeyPem;
+
+    public String getPublicKeyPem() {
+        return publicKeyPem;
+    }
+
+    public void setPublicKeyPem(String publicKeyPem) {
+        this.publicKeyPem = publicKeyPem;
+    }
 
     public Key getSecretKey() {
         return secretKey;

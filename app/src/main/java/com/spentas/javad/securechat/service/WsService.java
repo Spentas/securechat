@@ -20,11 +20,8 @@ import com.spentas.javad.securechat.utils.MainThreadBus;
 import com.spentas.javad.securechat.utils.event.DataSetChangeEvent;
 import com.spentas.javad.securechat.utils.event.NewMessageEvent;
 import com.squareup.otto.Bus;
-import com.squareup.otto.Produce;
 
 import org.json.JSONObject;
-
-import java.security.PublicKey;
 
 import javax.inject.Inject;
 
@@ -56,13 +53,12 @@ public class WsService extends Service implements WebSocketClient.Listener {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.i(TAG, "Service Started");
         ((App)App.getContext()).getComponent().inject(this);
-//        mBus.register(this);
         mTbus = MainThreadBus.getInstance();
         mTbus.register(this);
         mConnection = ConnectionManager.getConnection(ConnectionManager.ConnectionType.WEBSOCKET);
         ((WsConnection) mConnection).setListener(this);
-//        mConnection.disConnect();
-  //      mConnection.connect();
+        mConnection.connect();
+
         return START_STICKY;
     }
 
@@ -96,6 +92,7 @@ public class WsService extends Service implements WebSocketClient.Listener {
         try {
             JSONObject jsonObject = new JSONObject(message);
             String flag = jsonObject.getString("flag");
+            Log.i(TAG, "Message flag: " +flag);
             if(flag.equalsIgnoreCase(TAG_SELF))
                 return;
 
@@ -109,8 +106,9 @@ public class WsService extends Service implements WebSocketClient.Listener {
 
             }
             if (flag.equalsIgnoreCase(TAG_KEY)){
-            User newFriend = new User();
-                newFriend.setPublicKey(msg.getPublicKey());
+                User newFriend = new User();
+                newFriend.setPublicKey(Util.decodeRSAPublicKeyFromString(msg.getPublicKeyPem()));
+                newFriend.setPublicKeyPem(msg.getPublicKeyPem());
                 newFriend.setUsername(msg.getFrom());
                 db.addFriend(newFriend, msg.getMessage());
                 mTbus.post(new DataSetChangeEvent());
@@ -123,7 +121,8 @@ public class WsService extends Service implements WebSocketClient.Listener {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            e.getStackTrace();
+            Log.i(TAG, "Error in onMessage");
         }
 
 

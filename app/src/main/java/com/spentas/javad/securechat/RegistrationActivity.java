@@ -27,6 +27,7 @@ import com.spentas.javad.securechat.utils.Utils;
 import org.json.JSONObject;
 
 import java.security.KeyPair;
+import java.security.PublicKey;
 
 import javax.inject.Inject;
 
@@ -103,6 +104,7 @@ public class RegistrationActivity extends AppCompatActivity implements Callback 
             protected Void doInBackground(Void... params) {
                 final long timeStarted = System.currentTimeMillis();
                 mKeyPair = RSAEngine.generate();
+                //test
                 System.out.println(Util.encodePrivateKey(mKeyPair.getPrivate()));
                 System.out.println("=======================");
                 System.out.println(Util.encodePublicKey(mKeyPair.getPublic()));

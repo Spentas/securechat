@@ -14,7 +14,7 @@ public class Message {
     private String flag;
     private String extra;
     private String message;
-    private PublicKey publicKey;
+    private String publicKeyPem;
 
 
     private String type;
@@ -165,12 +165,12 @@ public class Message {
         return extra;
     }
 
-    public PublicKey getPublicKey() {
-        return publicKey;
+    public String getPublicKeyPem() {
+        return publicKeyPem;
     }
 
-    public void setPublicKey(PublicKey publicKey) {
-        this.publicKey = publicKey;
+    public void setPublicKeyPem(String publicKeyPem) {
+        this.publicKeyPem = publicKeyPem;
     }
 
     public void setExtra(String extra) {

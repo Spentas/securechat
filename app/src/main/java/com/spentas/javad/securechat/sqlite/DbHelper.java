@@ -150,9 +150,9 @@ public class DbHelper extends SQLiteOpenHelper {
             ContentValues cv = new ContentValues();
             cv.put(COLUMN_NAME, user.getUsername());
             cv.put(COLUMN_AVATAR, user.getImage());
-            cv.put(COLUMN_USER_PUBLIC_KEY,Util.encodeToBase64(user.getPublicKey().getEncoded()));
-
-             db.insert(TABLE_FRIENDS, null, cv);
+            cv.put(COLUMN_USER_PUBLIC_KEY,user.getPublicKeyPem());
+            cv.put(COLUMN_SYMMETRIC_KEY,Util.encodeToBase64(user.getSecretKey().getEncoded()));
+            db.insert(TABLE_FRIENDS, null, cv);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -168,12 +168,15 @@ public class DbHelper extends SQLiteOpenHelper {
 
             ContentValues cv = new ContentValues();
             cv.put(COLUMN_NAME, user.getUsername());
-            cv.put(COLUMN_USER_PUBLIC_KEY, Util.encodeToBase64(user.getPublicKey().getEncoded()));
+            cv.put(COLUMN_USER_PUBLIC_KEY,user.getPublicKeyPem());
             cv.put(COLUMN_SYMMETRIC_KEY, key);
             db.insert(TABLE_FRIENDS, null, cv);
             Log.i("db", "new friend added");
         } catch (Exception e) {
             e.printStackTrace();
+            Log.i("db", "ERROR in adding new friend to DB");
+
+
 
         }
         db.close();

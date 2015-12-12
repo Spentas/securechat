@@ -27,8 +27,7 @@ import butterknife.ButterKnife;
 public class SplashActivity extends Activity {
     @Inject
     DbHelper db;
-//    @Inject
-//    ConnectionManager cm;
+
     private final int SPLASH_DISPLAY_LENGTH = 9000;
     @Inject
     SharedPreference sharedPreference;
@@ -46,7 +45,7 @@ public class SplashActivity extends Activity {
         setContentView(R.layout.activity_splash);
         ButterKnife.bind(this);
         ((App) getApplication()).getComponent().inject(this);
-        db.deleteAllFriends();
+        //db.deleteAllFriends();
 
 
         mLoginStaus = sharedPreference.getLoginStatus();
