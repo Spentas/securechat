@@ -9,7 +9,7 @@
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
     <string name="error_pass_notmatch">Password does not match</string>
-    <string name="error_password_inadequatchar">Must be at least 6 characters long</string>
+    <string name="error_password_inadequatchar">Must be at least 8 characters long</string>
     <!-- Navigation Drawer icon codes -->
     <string name="drawer_icon_splash_screens">&#xe82c;</string>
     <string name="drawer_icon_progress_bars">&#xe84c;</string>

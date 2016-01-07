@@ -3,9 +3,11 @@ package com.spentas.javad.securechat.crypto;
 
 import android.util.Base64;
 
+import java.io.UnsupportedEncodingException;
 import java.security.Key;
 import java.security.KeyFactory;
 import java.security.KeyPair;
+import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.security.NoSuchProviderException;
 import java.security.PrivateKey;
@@ -93,13 +95,27 @@ public class Util {
 //        }
 //    }
 
-    public static PublicKey decodeRSAPublicKeyFromString(String publicKeyPEM) throws Exception {
+    public static PublicKey decodeRSAPublicKeyFromString(String publicKeyPEM)  {
+
         publicKeyPEM = publicKeyPEM.trim();
-        KeyFactory keyFactory = KeyFactory.getInstance("RSA", "SC");
+        KeyFactory keyFactory = null;
+        try {
+            keyFactory = KeyFactory.getInstance("RSA", "SC");
+
         byte[] publicKeyBytes = org.spongycastle.util.encoders.Base64.decode(publicKeyPEM.getBytes("UTF-8"));
         X509EncodedKeySpec x509KeySpec = new X509EncodedKeySpec(publicKeyBytes);
         return keyFactory.generatePublic(x509KeySpec);
-    }
+        } catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        } catch (NoSuchProviderException e) {
+            e.printStackTrace();
+        } catch (InvalidKeySpecException e) {
+            e.printStackTrace();
+        } catch (UnsupportedEncodingException e) {
+            e.printStackTrace();
+        }
+        return null;
+        }
 
     public static PrivateKey decodeRSAPrivateKeyFromString(String privateKeyPEM) throws Exception {
 
@@ -160,4 +176,29 @@ public class Util {
         return signedString;
     }
 
+
+    /**
+     * hash function
+     * @param s
+     * @return
+     */
+    public static String SHA256(String s) {
+        try {
+            // Create SHA Hash
+            MessageDigest digest = java.security.MessageDigest.getInstance("SHA-256");
+            digest.update(s.getBytes());
+            byte[] messageDigest = digest.digest();
+
+            // Create Hex String
+            StringBuffer hexString = new StringBuffer();
+            for (int i = 0; i < messageDigest.length; i++)
+                hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
+            return hexString.toString();
+
+        }
+        catch (NoSuchAlgorithmException e) {
+            e.printStackTrace();
+        }
+        return "";
+    }
 }

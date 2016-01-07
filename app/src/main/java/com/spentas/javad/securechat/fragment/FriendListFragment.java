@@ -66,6 +66,7 @@ public class FriendListFragment extends Fragment {
         ((App) App.getContext()).getComponent().inject(this);
         mLayoutManager = new LinearLayoutManager(getActivity());
         mFriends = mDb.fetchAllUsers();
+
         mFriendListAdapter = new FriendListAdapter(getActivity(),mFriends);
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
         mRecyclerView.setLayoutManager(mLayoutManager);

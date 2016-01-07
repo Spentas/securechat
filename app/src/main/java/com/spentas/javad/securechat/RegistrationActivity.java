@@ -14,6 +14,8 @@ import android.widget.Toast;
 
 import com.loopj.android.http.RequestParams;
 import com.spentas.javad.securechat.app.App;
+import com.spentas.javad.securechat.crypto.CryptoEngineFactory;
+import com.spentas.javad.securechat.crypto.KeyType;
 import com.spentas.javad.securechat.crypto.RSAEngine;
 import com.spentas.javad.securechat.crypto.Util;
 import com.spentas.javad.securechat.model.User;
@@ -22,10 +24,12 @@ import com.spentas.javad.securechat.network.webservice.RestfulRequest;
 import com.spentas.javad.securechat.sqlite.DbHelper;
 import com.spentas.javad.securechat.sqlite.SharedPreference;
 import com.spentas.javad.securechat.utils.Callback;
+import com.spentas.javad.securechat.utils.Const;
 import com.spentas.javad.securechat.utils.Utils;
 
 import org.json.JSONObject;
 
+import java.lang.ref.WeakReference;
 import java.security.KeyPair;
 import java.security.PublicKey;
 
@@ -39,7 +43,8 @@ import butterknife.OnClick;
  * Created by javad on 10/29/2015.
  */
 public class RegistrationActivity extends AppCompatActivity implements Callback {
-
+    @Inject
+    CryptoEngineFactory crypto;
     @Inject
     DbHelper mDb;
     @Inject
@@ -132,9 +137,13 @@ public class RegistrationActivity extends AppCompatActivity implements Callback 
 
                 if (Utils.isNotNull(username) && Utils.isNotNull(password) && mPasswordConfirmation.getText().toString().compareTo(mPassword.getText().toString()) == 0) {
                     if (!Utils.validate(username) && Utils.isPasswordValid(mPassword.getText().toString())) {
+                        PublicKey serverPublicKey = Util.decodeRSAPublicKeyFromString(Const.SERVER_PUBLIC_KEY);
+                        String cipherPublicKey = crypto.getEngine(KeyType.RSA).encrypt(Util.encodeToBase64(mKeyPair.getPublic().getEncoded()), serverPublicKey);
+                        String hashPassword = Util.SHA256(mPassword.getText().toString());
+                        String cipherPassword = crypto.getEngine(KeyType.RSA).encrypt(hashPassword,serverPublicKey);
                         RequestParams params = new RequestParams();
-                        params.put(NetworkConfig.REST_PUBLIC_KEY_PARAM, Util.encodeToBase64(mKeyPair.getPublic().getEncoded()));
-                        params.put(NetworkConfig.REST_PASSWORD_PARAM, password);
+                        params.put(NetworkConfig.REST_PUBLIC_KEY_PARAM, cipherPublicKey);
+                        params.put(NetworkConfig.REST_PASSWORD_PARAM, cipherPassword);
                         params.put(NetworkConfig.REST_USERNAME_PARAM, username);
                         RestfulRequest.register(params, RegistrationActivity.this);
                     }

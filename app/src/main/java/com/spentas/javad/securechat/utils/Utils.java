@@ -285,7 +285,7 @@ public class Utils {
      * @return true for chars > 5 and false for chars < 6 String object
      */
     public static boolean isPasswordValid(String txt) {
-        return txt != null && txt.length() > 5 ? true : false;
+        return txt != null && txt.length() > 7 ? true : false;
     }
 
     /**
@@ -328,29 +328,6 @@ public class Utils {
     }
 
 
-    /**
-     * hash function
-     * @param s
-     * @return
-     */
-    public static String md5(String s) {
-        try {
-            // Create MD5 Hash
-            MessageDigest digest = java.security.MessageDigest.getInstance("MD5");
-            digest.update(s.getBytes());
-            byte[] messageDigest = digest.digest();
 
-            // Create Hex String
-            StringBuffer hexString = new StringBuffer();
-            for (int i = 0; i < messageDigest.length; i++)
-                hexString.append(Integer.toHexString(0xFF & messageDigest[i]));
-            return hexString.toString();
-
-        }
-        catch (NoSuchAlgorithmException e) {
-            e.printStackTrace();
-        }
-        return "";
-    }
 
 }
